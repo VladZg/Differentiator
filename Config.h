@@ -9,7 +9,6 @@
 // #define RIGHT_N (node->left)
 
 #define HERE(cmd)   \
-    cmd;            \
-    fprintf(stderr, "\n" #cmd "\n");
+    fprintf(stderr, "\n" #cmd ":\n");
 
 #endif

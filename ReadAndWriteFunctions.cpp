@@ -46,6 +46,8 @@ int ReadNodeVal(char* node_val, enum TreeDataType* val_type, enum Operators* op_
         *val_type = VAR_TYPE;
         *var_val = node_val;
 
+        // free(node_val);
+
         return 1;
     }
 
@@ -78,17 +80,21 @@ int ReadNodeVal(char* node_val, enum TreeDataType* val_type, enum Operators* op_
 
 int IsOperatorWithOneArgument(enum Operators op_val)
 {
-    if (op_val == OP_EXP  ||
-        op_val == OP_SQRT ||
-        // op_val == OP_R ||
-        op_val == OP_LOG  ||
-        op_val == OP_LN   ||
-        op_val == OP_SIN  ||
-        op_val == OP_COS  ||
-        op_val == OP_TG   ||
-        op_val == OP_CTG  ||
-        op_val == OP_SH   ||
-        op_val == OP_CH)
+    if (op_val == OP_EXP     ||
+        op_val == OP_SQRT    ||
+        // op_val == OP_R    ||
+        op_val == OP_LOG     ||
+        op_val == OP_LN      ||
+        op_val == OP_SIN     ||
+        op_val == OP_COS     ||
+        op_val == OP_TG      ||
+        op_val == OP_CTG     ||
+        op_val == OP_SH      ||
+        op_val == OP_CH      ||
+        op_val == OP_ARCSIN  ||
+        op_val == OP_ARCCOS  ||
+        op_val == OP_ARCTG   ||
+        op_val == OP_ARCCTG    )
 
         return 1;
 
@@ -201,6 +207,9 @@ int WriteTailOfTexFile(FILE* tex_file)
 
 int WriteExpressionInTexFile(const Node* node, FILE* tex_file)
 {
+    ASSERT(node     != nullptr);
+    ASSERT(tex_file != nullptr);
+
     fprintf(tex_file, "\\[");
 
     TranslateTreeToTex(node, tex_file);
@@ -245,6 +254,14 @@ int TranslateNodeToTex(FILE* tex_file, const Node* node, const char* op_text, en
     return 1;
 }
 
+int IsPrintableNode(const Node* node)
+{
+    if (node->val_type == NUM_TYPE && node->num_val == 0)
+        return 0;
+
+    return 1;
+}
+
 int TranslateTreeToTex(const Node* node, FILE* tex_file)
 {
     ASSERT(node != nullptr);
@@ -263,22 +280,26 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
 
         switch(node->op_val)
         {
-            case OP_ADD  : { TranslateNodeToTex(tex_file, node, "+"     , OP_TEX_INPRINT          , 1); break; }
-            case OP_SUB  : { TranslateNodeToTex(tex_file, node, "-"     , OP_TEX_INPRINT          , 1); break; }
-            case OP_MUL  : { TranslateNodeToTex(tex_file, node, "\\cdot", OP_TEX_INPRINT          , 0); break; }
-            case OP_DIV  : { TranslateNodeToTex(tex_file, node, "\\frac", OP_TEX_PREPRINT_TWO_ARGS, 0); break; }
-            case OP_DEG  : { TranslateNodeToTex(tex_file, node, "^"     , OP_TEX_INPRINT          , 1); break; }
-            case OP_EXP  : { TranslateNodeToTex(tex_file, node, "e^"    , OP_TEX_PREPRINT_ONE_ARG , 1); break; }
-            case OP_SQRT : { TranslateNodeToTex(tex_file, node, "\\sqrt", OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_ADD   : { TranslateNodeToTex(tex_file, node, "+"                , OP_TEX_INPRINT          , 1); break; }
+            case OP_SUB   : { TranslateNodeToTex(tex_file, node, "-"                , OP_TEX_INPRINT          , 1); break; }
+            case OP_MUL   : { TranslateNodeToTex(tex_file, node, "\\cdot"           , OP_TEX_INPRINT          , 0); break; }
+            case OP_DIV   : { TranslateNodeToTex(tex_file, node, "\\frac"           , OP_TEX_PREPRINT_TWO_ARGS, 0); break; }
+            case OP_DEG   : { TranslateNodeToTex(tex_file, node, "^"                , OP_TEX_INPRINT          , 0); break; }
+            case OP_EXP   : { TranslateNodeToTex(tex_file, node, "e^"               , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_SQRT  : { TranslateNodeToTex(tex_file, node, "\\sqrt"           , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
             // case OP_R    : { TranslateNodeToTex(tex_file, node, "+", OP_TEX_INPRINT); break;}
-            case OP_LOG  : { TranslateNodeToTex(tex_file, node, "\\log" , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
-            case OP_LN   : { TranslateNodeToTex(tex_file, node, "\\ln"  , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
-            case OP_SIN  : { TranslateNodeToTex(tex_file, node, "\\sin" , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
-            case OP_COS  : { TranslateNodeToTex(tex_file, node, "\\cos" , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
-            case OP_TG   : { TranslateNodeToTex(tex_file, node, "\\tan" , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
-            case OP_CTG  : { TranslateNodeToTex(tex_file, node, "\\cot" , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
-            case OP_SH   : { TranslateNodeToTex(tex_file, node, "\\sinh", OP_TEX_PREPRINT_ONE_ARG , 0); break; }
-            case OP_CH   : { TranslateNodeToTex(tex_file, node, "\\cosh", OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_LOG   : { TranslateNodeToTex(tex_file, node, "\\log"            , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_LN    : { TranslateNodeToTex(tex_file, node, "\\ln"             , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_SIN   : { TranslateNodeToTex(tex_file, node, "\\sin"            , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_COS   : { TranslateNodeToTex(tex_file, node, "\\cos"            , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_TG    : { TranslateNodeToTex(tex_file, node, "\\tan"            , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_CTG   : { TranslateNodeToTex(tex_file, node, "\\cot"            , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_SH    : { TranslateNodeToTex(tex_file, node, "\\sinh"           , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_CH    : { TranslateNodeToTex(tex_file, node, "\\cosh"           , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_ARCSIN: { TranslateNodeToTex(tex_file, node, "\\arcsin"         , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_ARCCOS: { TranslateNodeToTex(tex_file, node, "\\arccos"         , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_ARCTG : { TranslateNodeToTex(tex_file, node, "\\arctan"         , OP_TEX_PREPRINT_ONE_ARG , 0); break; }
+            case OP_ARCCTG: { TranslateNodeToTex(tex_file, node, "\\pi/2-\\arctan"  , OP_TEX_PREPRINT_ONE_ARG , 1); break; }
 
             default      : return 0;
         }
@@ -289,7 +310,11 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
     }
 
     fprintf(tex_file, "{");
+
+    // if (IsPrintableNode(node)) NodeValPrint(node, tex_file);
+
     NodeValPrint(node, tex_file);
+
     fprintf(tex_file, "}");
 
     return 1;

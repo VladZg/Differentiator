@@ -55,8 +55,12 @@ Node* CreateNode(enum TreeDataType val_type, double num_val, const char* var_val
 
 Node* CopyNode(const Node* node)
 {
+    ASSERT(node != nullptr);
+
     Node* left = nullptr;
     Node* right = nullptr;
+
+    // HERE(START);
 
     if (node->left)
         left = CopyNode(node->left);
@@ -64,7 +68,16 @@ Node* CopyNode(const Node* node)
     if (node->right)
         right = CopyNode(node->right);
 
-    return CreateNode(node->val_type, node->num_val, node->var_val, node->op_val, left, right);
+    char* var_val = nullptr;
+
+    if (node->val_type == VAR_TYPE)
+    {
+        var_val = (char*) calloc(MAX_NODE_VAL_LEN, sizeof(char));
+        memcpy(var_val, node->var_val, MAX_NODE_VAL_LEN);
+        // fprintf(stderr, "%s\n\n\n", node->var_val);
+    }
+
+    return CreateNode(node->val_type, node->num_val, var_val, node->op_val, left, right);
 }
 
 int NodeDtor(Node* node)
@@ -78,7 +91,13 @@ int NodeDtor(Node* node)
 
     if (node->right) NodeDtor(node->right);
 
+    if (node->var_val) free((void*) node->var_val);
+
     node->val_type  = NULL_TYPE;
+    node->var_val   = nullptr;
+    node->num_val   = 0;
+    node->op_val    = NULL_OP;
+
     node->left      = nullptr;
     node->right     = nullptr;
     node->prev      = nullptr;
@@ -151,22 +170,26 @@ int TreeDtor(Tree* tree)
 
 enum Operators IsOperator(const char* node_val)
 {
-    if      (!strcasecmp(node_val, "+"   )) return OP_ADD ;
-    else if (!strcasecmp(node_val, "-"   )) return OP_SUB ;
-    else if (!strcasecmp(node_val, "*"   )) return OP_MUL ;
-    else if (!strcasecmp(node_val, "/"   )) return OP_DIV ;
-    else if (!strcasecmp(node_val, "^"   )) return OP_DEG ;
-    else if (!strcasecmp(node_val, "exp" )) return OP_EXP ;
-    else if (!strcasecmp(node_val, "sqrt")) return OP_SQRT;
-    // else if (!strcasecmp(node_val, "root")) return OP_RT  ;
-    else if (!strcasecmp(node_val, "log" )) return OP_LOG ;
-    else if (!strcasecmp(node_val, "ln"  )) return OP_LN  ;
-    else if (!strcasecmp(node_val, "sin" )) return OP_SIN ;
-    else if (!strcasecmp(node_val, "cos" )) return OP_COS ;
-    else if (!strcasecmp(node_val, "tg"  )) return OP_TG  ;
-    else if (!strcasecmp(node_val, "ctg" )) return OP_CTG ;
-    else if (!strcasecmp(node_val, "ch"  )) return OP_CH  ;
-    else if (!strcasecmp(node_val, "sh"  )) return OP_SH  ;
+    if      (!strcasecmp(node_val, "+"     )) return OP_ADD   ;
+    else if (!strcasecmp(node_val, "-"     )) return OP_SUB   ;
+    else if (!strcasecmp(node_val, "*"     )) return OP_MUL   ;
+    else if (!strcasecmp(node_val, "/"     )) return OP_DIV   ;
+    else if (!strcasecmp(node_val, "^"     )) return OP_DEG   ;
+    else if (!strcasecmp(node_val, "exp"   )) return OP_EXP   ;
+    else if (!strcasecmp(node_val, "sqrt"  )) return OP_SQRT  ;
+    // else if (!strcasecmp(node_val, "root")) return OP_RT      ;
+    else if (!strcasecmp(node_val, "log"   )) return OP_LOG   ;
+    else if (!strcasecmp(node_val, "ln"    )) return OP_LN    ;
+    else if (!strcasecmp(node_val, "sin"   )) return OP_SIN   ;
+    else if (!strcasecmp(node_val, "cos"   )) return OP_COS   ;
+    else if (!strcasecmp(node_val, "tg"    )) return OP_TG    ;
+    else if (!strcasecmp(node_val, "ctg"   )) return OP_CTG   ;
+    else if (!strcasecmp(node_val, "ch"    )) return OP_CH    ;
+    else if (!strcasecmp(node_val, "sh"    )) return OP_SH    ;
+    else if (!strcasecmp(node_val, "arcsin")) return OP_ARCSIN;
+    else if (!strcasecmp(node_val, "arccos")) return OP_ARCCOS;
+    else if (!strcasecmp(node_val, "arctg" )) return OP_ARCTG ;
+    else if (!strcasecmp(node_val, "arcctg")) return OP_ARCCTG;
 
     return NULL_OP;
 }
@@ -202,23 +225,27 @@ void NodeValPrint(const Node* node, FILE* stream)
 
 void OperatorPrint(enum Operators op_code, FILE* stream)
 {
-    if (op_code == OP_ADD) { fprintf(stream, "+"   ); return; }
-    if (op_code == OP_SUB) { fprintf(stream, "-"   ); return; }
-    if (op_code == OP_MUL) { fprintf(stream, "*"   ); return; }
-    if (op_code == OP_DIV) { fprintf(stream, "/"   ); return; }
-    if (op_code == OP_DEG) { fprintf(stream, "^"   ); return; }
-    if (op_code == OP_SQRT){ fprintf(stream, "sqrt"); return; }
+    if (op_code == OP_ADD   ) { fprintf(stream, "+"     ); return; }
+    if (op_code == OP_SUB   ) { fprintf(stream, "-"     ); return; }
+    if (op_code == OP_MUL   ) { fprintf(stream, "*"     ); return; }
+    if (op_code == OP_DIV   ) { fprintf(stream, "/"     ); return; }
+    if (op_code == OP_DEG   ) { fprintf(stream, "^"     ); return; }
+    if (op_code == OP_SQRT  ) { fprintf(stream, "sqrt"  ); return; }
     // if (op_code == OP_RT)  { fprintf(stream, "root"); return; }
-    if (op_code == OP_LOG) { fprintf(stream, "log" ); return; }
-    if (op_code == OP_LN ) { fprintf(stream, "ln"  ); return; }
-    if (op_code == OP_SIN) { fprintf(stream, "sin" ); return; }
-    if (op_code == OP_COS) { fprintf(stream, "cos" ); return; }
-    if (op_code == OP_TG ) { fprintf(stream, "tg"  ); return; }
-    if (op_code == OP_CTG) { fprintf(stream, "ctg" ); return; }
-    if (op_code == OP_CH ) { fprintf(stream, "ch"  ); return; }
-    if (op_code == OP_SH ) { fprintf(stream, "sh"  ); return; }
+    if (op_code == OP_LOG   ) { fprintf(stream, "log"   ); return; }
+    if (op_code == OP_LN    ) { fprintf(stream, "ln"    ); return; }
+    if (op_code == OP_SIN   ) { fprintf(stream, "sin"   ); return; }
+    if (op_code == OP_COS   ) { fprintf(stream, "cos"   ); return; }
+    if (op_code == OP_TG    ) { fprintf(stream, "tg"    ); return; }
+    if (op_code == OP_CTG   ) { fprintf(stream, "ctg"   ); return; }
+    if (op_code == OP_CH    ) { fprintf(stream, "ch"    ); return; }
+    if (op_code == OP_SH    ) { fprintf(stream, "sh"    ); return; }
+    if (op_code == OP_ARCSIN) { fprintf(stream, "arcsin"); return; }
+    if (op_code == OP_ARCCOS) { fprintf(stream, "arccos"); return; }
+    if (op_code == OP_ARCTG ) { fprintf(stream, "arctg" ); return; }
+    if (op_code == OP_ARCCTG) { fprintf(stream, "arcctg"); return; }
 
-    fprintf(stream, "not an opearator" );
+    fprintf(stream, "not an operator" );
 }
 
 int IsVarsInTree(Node* node)
@@ -246,9 +273,11 @@ Node* CalculateConstantSubtrees(Node* node)
 {
     if (!node) return nullptr;
 
+    ASSERT(node != nullptr);
+
     if (node->val_type == OP_TYPE)
     {
-        Node* left_temp = CalculateConstantSubtrees(node->left);
+        Node* left_temp =  CalculateConstantSubtrees(node->left);
         Node* right_temp = CalculateConstantSubtrees(node->right);
 
         if ((left_temp->val_type == NUM_TYPE) && (right_temp->val_type == NUM_TYPE))
@@ -277,12 +306,12 @@ Node* CalculateConstantSubtrees(Node* node)
                 {
                     node->num_val = left_temp->num_val / right_temp->num_val;
 
-                    // if (node->num_val == nan(""))
-                    // {
-                    //     fprintf(stderr, "Деление на нуль!\n");
-                    //     abort();
-                    //     return nullptr;
-                    // }
+                    if (node->num_val == nan(""))
+                    {
+                        fprintf(stderr, "Деление на нуль!\n");
+                        abort();
+                        return nullptr;
+                    }
 
                     break;
                 }
@@ -358,17 +387,41 @@ Node* CalculateConstantSubtrees(Node* node)
                     node->num_val = sinh(right_temp->num_val);
                     break;
                 }
+
+                case OP_ARCSIN:
+                {
+                    node->num_val = asin(right_temp->num_val);
+                    break;
+                }
+
+                case OP_ARCCOS:
+                {
+                    node->num_val = acos(right_temp->num_val);
+                    break;
+                }
+
+                case OP_ARCTG:
+                {
+                    node->num_val = atan(right_temp->num_val);
+                    break;
+                }
+
+                case OP_ARCCTG:
+                {
+                    node->num_val = M_PI / 2 - atan(right_temp->num_val);
+                    break;
+                }
             }
 
             node->op_val = NULL_OP;
             node->val_type = NUM_TYPE;
 
-            free(node->left);
-            free(node->right);
-            node->left = nullptr;
-            node->right = nullptr;
-            // NodeDtor(node->left);
-            // NodeDtor(node->right);
+            // free(node->left);
+            // free(node->right);
+            // node->left = nullptr;
+            // node->right = nullptr;
+            NodeDtor(node->left);
+            NodeDtor(node->right);
         }
     }
 
@@ -386,6 +439,8 @@ Node* DestroyNeutralTreeElements(Node* node)
 
     if (node->val_type == OP_TYPE)
     {
+        // Node* temp_node = (Node*) calloc(1, sizeof(Node));
+
         if (node->left)  node->left  = DestroyNeutralTreeElements(node->left);
         if (node->right) node->right = DestroyNeutralTreeElements(node->right);
 
@@ -396,14 +451,14 @@ Node* DestroyNeutralTreeElements(Node* node)
         {
             if (IS_NUM(node->left) && IS_ZERO(node->left))
             {
-                // NodeDtor(node);
-                node = CR;
+                return CR;
+                NodeDtor(node);
             }
 
             else if (IS_NUM(node->right) && IS_ZERO(node->right))
             {
-                // NodeDtor(node);
-                node = CL;
+                return CL;
+                NodeDtor(node);
             }
         }
 
@@ -411,8 +466,8 @@ Node* DestroyNeutralTreeElements(Node* node)
         {
             if (IS_NUM(node->right) && IS_ZERO(node->right))
             {
-                // NodeDtor(node);
-                node = CL;
+                return CL;
+                NodeDtor(node);
             }
         }
 
@@ -421,20 +476,20 @@ Node* DestroyNeutralTreeElements(Node* node)
             if ((IS_NUM(node->left)  && IS_ZERO(node->left )) ||
                 (IS_NUM(node->right) && IS_ZERO(node->right))   )
             {
-                // NodeDtor(node);
-                node = CREATE_NUM(0);
+                NodeDtor(node);
+                return CREATE_NUM(0);
             }
 
             else if (IS_NUM(node->left) && IS_ONE(node->left))
             {
-                // NodeDtor(node->left);
-                node = CR;
+                return CR;
+                NodeDtor(node);
             }
 
             else if (IS_NUM(node->right) && IS_ONE(node->right))
             {
-                // NodeDtor(node->right);
-                node = CL;
+                return CL;
+                NodeDtor(node);
             }
         }
 
@@ -442,14 +497,14 @@ Node* DestroyNeutralTreeElements(Node* node)
         {
             if (IS_NUM(node->left) && IS_ZERO(node->left))
             {
-                // NodeDtor(node->right);
-                node = CREATE_NUM(0);
+                NodeDtor(node);
+                return CREATE_NUM(0);
             }
 
             if (IS_NUM(node->right) && IS_ONE(node->right))
             {
-                // NodeDtor(node->right);
-                node = CL;
+                return CL;
+                NodeDtor(node);
             }
         }
 
@@ -459,21 +514,21 @@ Node* DestroyNeutralTreeElements(Node* node)
             {
                 if (IS_ZERO(node->right))
                 {
-                    // NodeDtor(node->right);
-                    node = CREATE_NUM(1);
+                    NodeDtor(node);
+                    return CREATE_NUM(1);
                 }
 
                 else if (IS_ONE(node->right))
                 {
-                    // NodeDtor(node->right);
-                    node = CL;
+                    return CL;
+                    NodeDtor(node);
                 }
             }
 
             else if (IS_NUM(node->left) && IS_ONE(node->left))
             {
-                // NodeDtor(node->right);
-                node = CREATE_NUM(1);
+                NodeDtor(node);
+                return CREATE_NUM(1);
             }
         }
 
@@ -482,8 +537,8 @@ Node* DestroyNeutralTreeElements(Node* node)
             if (IS_NUM(node->right) &&
                 IS_ZERO(node->right))
             {
-                // NodeDtor(node->right);
-                node = CREATE_NUM(1);
+                NodeDtor(node);
+                return CREATE_NUM(1);
             }
         }
 
@@ -494,10 +549,15 @@ Node* DestroyNeutralTreeElements(Node* node)
 }
 
 #undef IS_OP
+#undef IS_NUM
+#undef IS_ZERO
+#undef IS_ONE
 
 Node* SimplifyTree(Node* node)
 {
     if(!node) return nullptr;
+
+    ASSERT(node != nullptr);
 
     node = CalculateConstantSubtrees(node);
 

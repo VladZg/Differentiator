@@ -36,10 +36,10 @@ enum Operators
     OP_CTG     ,
     OP_SH      ,
     OP_CH      ,
-    // OP_ARCSIN  ,
-    // OP_ARCCOS  ,
-    // OP_ARCTG   ,
-    // OP_ARCCTG  ,
+    OP_ARCSIN  ,
+    OP_ARCCOS  ,
+    OP_ARCTG   ,
+    OP_ARCCTG  ,
 };
 
 enum OpTexPrintModes

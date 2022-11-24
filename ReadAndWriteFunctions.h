@@ -8,6 +8,7 @@ Node* ReadExpressionToTree (FILE* database_file, Tree* tree);
 int   WriteTree            (FILE* stream, Tree* tree, const char* database_name);
 int   WriteNode            (FILE* stream, Node* node);
 
+int IsPrintableNode(const Node* node);
 int IsOperatorWithOneArgument(enum Operators op_val);
 int WriteExpressionInTexFile(const Node* node, FILE* tex_file);
 int TranslateNodeToTex(FILE* tex_file, const char* op_text, enum OpTexPrintModes mode, const Node* node); //int is_braces

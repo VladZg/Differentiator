@@ -6,13 +6,18 @@
 #include "./Stack/Assert.h"
 #include "./Stack/Stack.h"
 #include "./Tree.h"
-#include "./DifferentiationRules.h"
+#include "./Differentiation.h"
 #include "./DiffDSL.h"
 #include "./ReadAndWriteFunctions.h"
 
 Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
 {
-    node = SimplifyTree(node);
+    ASSERT(tex_file != nullptr);
+    ASSERT(n_step != nullptr);
+
+    if (!node) return nullptr;
+
+    ASSERT(node != nullptr);
 
     Node* differed_node = nullptr;
 
@@ -72,27 +77,19 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
                     if (is_vars_in_base)
                     {
                         if (is_vars_in_degree)
-                        {
                             differed_node = MUL(CN, ADD(MUL(DL, DIV(CR, CL)), MUL(DR, LN(CL))));
-                        }
 
                         else
-                        {
                             differed_node = MUL(MUL(CREATE_NUM(node->right->num_val), DEG(CL, CREATE_NUM(node->right->num_val - 1.0))), DL);
-                        }
                     }
 
                     else
                     {
                         if (is_vars_in_degree)
-                        {
                             differed_node = MUL(MUL(LN(CREATE_NUM(node->left->num_val)), CN), DR);
-                        }
 
                         else
-                        {
                             differed_node = CREATE_NUM(0);
-                        }
                     }
 
                     break;
@@ -158,6 +155,34 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
                     break;
                 }
 
+                case OP_ARCSIN:
+                {
+                    differed_node = MUL(DIV(CREATE_NUM(1), SQRT(SUB(CREATE_NUM(1), DEG(CR, CREATE_NUM(2))))), DR);
+                    // differed_node = CREATE_NUM(1337);
+                    break;
+                }
+
+                case OP_ARCCOS:
+                {
+                    differed_node = MUL(DIV(CREATE_NUM(-1), SQRT(SUB(CREATE_NUM(1), DEG(CR, CREATE_NUM(2))))), DR);
+                    // differed_node = CREATE_NUM(1337);
+                    break;
+                }
+
+                case OP_ARCTG:
+                {
+                    differed_node = MUL(DIV(CREATE_NUM(1), ADD(CREATE_NUM(1), DEG(CR, CREATE_NUM(2)))), DR);
+                    // differed_node = CREATE_NUM(1337);
+                    break;
+                }
+
+                case OP_ARCCTG:
+                {
+                    differed_node = MUL(DIV(CREATE_NUM(-1), ADD(CREATE_NUM(1), DEG(CR, CREATE_NUM(2)))), DR);
+                    // differed_node = CREATE_NUM(1337);
+                    break;
+                }
+
                 default: return nullptr;
             }
 
@@ -167,14 +192,55 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
         default: return nullptr;
     }
 
+    // differed_node = SimplifyTree(differed_node);
+
+//     fprintf(tex_file, "%ld step:\n"
+//                       "finding a derivation of funtion:\n", (*n_step)++);
+//     WriteExpressionInTexFile(node, tex_file);
+//
+//     fprintf(tex_file, "here it is:\n");
+//     WriteExpressionInTexFile(differed_node, tex_file);
+
+    return differed_node;
+}
+
+Node* NDiff(Node* node, size_t n, FILE* tex_file)
+{
+    if (n == 0) return node;
+
+    Node** differed_nodes = (Node**) calloc(n, sizeof(Node*));
+    differed_nodes[0] = node;
+
+    for (size_t i = 0; i < n; i++)
+    {
+        fprintf(tex_file, "Calculating the %ld derivation of the expression:\n\n"
+                          "It's easy, just differentiating the %ld derivation\n\n", i+1, i);
+
+        differed_nodes[i+1] = Differentiate(differed_nodes[i], tex_file);
+
+        fprintf(tex_file, "Thus, the %ld derivation:\n", i+1);
+
+        WriteExpressionInTexFile(differed_nodes[i+1], tex_file);
+    }
+
+    Node* n_differed_node = differed_nodes[n];
+
+    for (size_t i = 1; i < n; i++) free(differed_nodes[i]);
+
+    free(differed_nodes);
+
+    return n_differed_node;
+}
+
+Node* Differentiate(Node* node, FILE* tex_file)
+{
+    node = SimplifyTree(node);
+
+    size_t n_step = 1;
+
+    Node* differed_node = Diff(node, tex_file, &n_step);
+
     differed_node = SimplifyTree(differed_node);
-
-    fprintf(tex_file, "%ld step:\n"
-                      "finding a derivation of funtion:\n", (*n_step)++);
-    WriteExpressionInTexFile(node, tex_file);
-
-    fprintf(tex_file, "here it is:\n");
-    WriteExpressionInTexFile(differed_node, tex_file);
 
     return differed_node;
 }
