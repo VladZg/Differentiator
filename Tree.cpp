@@ -411,6 +411,11 @@ Node* CalculateConstantSubtrees(Node* node)
                     node->num_val = M_PI / 2 - atan(right_temp->num_val);
                     break;
                 }
+
+                default:
+                {
+                    return nullptr;
+                }
             }
 
             node->op_val = NULL_OP;
@@ -441,6 +446,9 @@ Node* DestroyNeutralTreeElements(Node* node)
     {
         // Node* temp_node = (Node*) calloc(1, sizeof(Node));
 
+        // Node* left  = nullptr;
+        // Node* right = nullptr;
+
         if (node->left)  node->left  = DestroyNeutralTreeElements(node->left);
         if (node->right) node->right = DestroyNeutralTreeElements(node->right);
 
@@ -451,14 +459,16 @@ Node* DestroyNeutralTreeElements(Node* node)
         {
             if (IS_NUM(node->left) && IS_ZERO(node->left))
             {
-                return CR;
-                NodeDtor(node);
+                node = CR;
+                // NodeDtor(node);
+                return node;
             }
 
             else if (IS_NUM(node->right) && IS_ZERO(node->right))
             {
-                return CL;
-                NodeDtor(node);
+                node = CL;
+                // NodeDtor(node);
+                return node;
             }
         }
 
@@ -466,8 +476,9 @@ Node* DestroyNeutralTreeElements(Node* node)
         {
             if (IS_NUM(node->right) && IS_ZERO(node->right))
             {
-                return CL;
-                NodeDtor(node);
+                node = CL;
+                // NodeDtor(node);
+                return node;
             }
         }
 
@@ -477,19 +488,23 @@ Node* DestroyNeutralTreeElements(Node* node)
                 (IS_NUM(node->right) && IS_ZERO(node->right))   )
             {
                 NodeDtor(node);
-                return CREATE_NUM(0);
+                node = CREATE_NUM(0);
             }
 
             else if (IS_NUM(node->left) && IS_ONE(node->left))
             {
-                return CR;
-                NodeDtor(node);
+                NodeDtor(node->left);
+
+                node = CR;
+                // NodeDtor(node);
+                return node;
             }
 
             else if (IS_NUM(node->right) && IS_ONE(node->right))
             {
-                return CL;
-                NodeDtor(node);
+                node = CL;
+                // NodeDtor(node);
+                return node;
             }
         }
 
@@ -498,13 +513,15 @@ Node* DestroyNeutralTreeElements(Node* node)
             if (IS_NUM(node->left) && IS_ZERO(node->left))
             {
                 NodeDtor(node);
-                return CREATE_NUM(0);
+                node = CREATE_NUM(0);
+                return node;
             }
 
             if (IS_NUM(node->right) && IS_ONE(node->right))
             {
-                return CL;
-                NodeDtor(node);
+                node = CL;
+                // NodeDtor(node);
+                return node;
             }
         }
 
@@ -515,20 +532,23 @@ Node* DestroyNeutralTreeElements(Node* node)
                 if (IS_ZERO(node->right))
                 {
                     NodeDtor(node);
-                    return CREATE_NUM(1);
+                    node = CREATE_NUM(1);
+                    return node;
                 }
 
                 else if (IS_ONE(node->right))
                 {
-                    return CL;
-                    NodeDtor(node);
+                    node = CL;
+                    // NodeDtor(node);
+                    return node;
                 }
             }
 
             else if (IS_NUM(node->left) && IS_ONE(node->left))
             {
                 NodeDtor(node);
-                return CREATE_NUM(1);
+                node = CREATE_NUM(1);
+                return node;
             }
         }
 
@@ -538,7 +558,8 @@ Node* DestroyNeutralTreeElements(Node* node)
                 IS_ZERO(node->right))
             {
                 NodeDtor(node);
-                return CREATE_NUM(1);
+                node = CREATE_NUM(1);
+                return node;
             }
         }
 
@@ -553,18 +574,22 @@ Node* DestroyNeutralTreeElements(Node* node)
 #undef IS_ZERO
 #undef IS_ONE
 
-Node* SimplifyTree(Node* node)
+Node* SimplifyTree(Node** node)
 {
-    if(!node) return nullptr;
+    if(!*node) return nullptr;
 
-    ASSERT(node != nullptr);
+    ASSERT(*node != nullptr);
 
-    node = CalculateConstantSubtrees(node);
+    *node = CalculateConstantSubtrees(*node);
 
-    if (node)
-        node = DestroyNeutralTreeElements(node);
+    if (*node)
+    {
+        Node* node_old = *node;
+        *node = DestroyNeutralTreeElements(*node);
+        NodeDtor(node_old);
+    }
 
-    return node;
+    return *node;
 }
 
 void TreePreorderPrint(const Node* node, FILE* stream)

@@ -49,6 +49,12 @@ enum OpTexPrintModes
     OP_TEX_INPRINT          ,
 };
 
+enum DumpModes
+{
+    SIMPLE_DUMP_MODE   ,
+    FULL_FULL_DUMP_MODE,
+};
+
 // #define TEXT_FOR_PRONOUNCING_FILENAME  "./TextForPronouncing.txt"
 // #define DATABASE_DUMP_HTML_FILENAME    "./DumpInfo/DatabaseDump.html"
 // #define TEXT_FOR_DOT_DUMP_FILENAME     "./DumpInfo/TextForDatabaseDump.dot"

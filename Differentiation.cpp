@@ -192,7 +192,7 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
         default: return nullptr;
     }
 
-    // differed_node = SimplifyTree(differed_node);
+    //   SimplifyTree(&differed_node);
 
 //     fprintf(tex_file, "%ld step:\n"
 //                       "finding a derivation of funtion:\n", (*n_step)++);
@@ -234,13 +234,13 @@ Node* NDiff(Node* node, size_t n, FILE* tex_file)
 
 Node* Differentiate(Node* node, FILE* tex_file)
 {
-    node = SimplifyTree(node);
+    SimplifyTree(&node);
 
     size_t n_step = 1;
 
     Node* differed_node = Diff(node, tex_file, &n_step);
 
-    differed_node = SimplifyTree(differed_node);
+    SimplifyTree(&differed_node);
 
     return differed_node;
 }

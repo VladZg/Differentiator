@@ -26,6 +26,12 @@ struct Tree
     size_t n_nodes;
 };
 
+struct ExpressionVar
+{
+    char*  name;
+    double value;
+};
+
 int NodeVerify (const Node* node);
 int NodeCtor   (Node* node, enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val);
 int NodeDtor   (Node* node);
@@ -35,7 +41,7 @@ Node* CreateNode(enum TreeDataType val_type, double num_val, const char* var_val
 Node* CopyNode(const Node* node);
 Node* CalculateConstantSubtrees(Node* node);
 Node* DestroyNeutralTreeElements(Node* node);
-Node* SimplifyTree(Node* node);
+Node* SimplifyTree(Node** node);
 int IsVarsInTree(Node* node);
 
 int TreeVerify(const Tree* tree);

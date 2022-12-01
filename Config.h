@@ -2,7 +2,7 @@
 #define MAIN_CONFIG_H
 
 #define NLOGGING
-#define NOPEN_DUMPS
+// #define NOPEN_DUMPS
 // #define NDEBUG
 
 // #define LEFT_N  (node->left)

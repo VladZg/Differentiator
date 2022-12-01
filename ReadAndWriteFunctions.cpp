@@ -9,21 +9,21 @@
 
 size_t Database_format_shift = 0;
 
-static void FprintfNSymb(FILE* stream, char symb, size_t n_symb)
-{
-    ASSERT(stream != nullptr);
-
-    for (size_t i = 1; i <= n_symb; i++)
-        fprintf(stream, "%c", symb);
-}
-
-static void SkipNSpaces(FILE* stream, size_t n)
-{
-    ASSERT(stream != nullptr);
-
-    for (size_t i = 0; i < n; i++)
-        fgetc(stream);
-}
+// static void FprintfNSymb(FILE* stream, char symb, size_t n_symb)
+// {
+//     ASSERT(stream != nullptr);
+//
+//     for (size_t i = 1; i <= n_symb; i++)
+//         fprintf(stream, "%c", symb);
+// }
+//
+// static void SkipNSpaces(FILE* stream, size_t n)
+// {
+//     ASSERT(stream != nullptr);
+//
+//     for (size_t i = 0; i < n; i++)
+//         fgetc(stream);
+// }
 
 // int ReadDatabaseName(FILE* database_file, char* database_name)
 // {
@@ -51,9 +51,9 @@ int ReadNodeVal(char* node_val, enum TreeDataType* val_type, enum Operators* op_
         return 1;
     }
 
-    enum Operators op_val_temp = NULL_OP;
+    enum Operators op_val_temp = IsOperator(node_val);
 
-    if (op_val_temp = IsOperator(node_val))
+    if (op_val_temp)
     {
         *val_type = OP_TYPE;
         *op_val = op_val_temp;
@@ -162,9 +162,35 @@ Node* ReadExpressionToTree(FILE* database_file, Tree* tree)
         return new_node;
     }
 
-    fprintf(stderr, "Database is damaged!!!");
-    // abort();
-    return nullptr;
+    else
+    {
+        fprintf(stderr, "Database is damaged!!!");
+        // abort();
+        return nullptr;
+    }
+}
+
+int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
+{
+    size_t i = 0;
+
+    while (fgetc(expression_file) == '\n')
+    {
+        char cur = fgetc(expression_file);
+
+        if (cur != EOF)
+        {
+            ungetc(cur, expression_file);
+
+            fscanf(expression_file, "%lf", &(params->vars[i].value));
+
+            // fprintf(stdout, "\n\n%s = %lf\n\n", params->vars[i].name, params->vars[i].value);
+        }
+
+        i++;
+    }
+
+    return 1;
 }
 
 int WriteNode(FILE* stream, Node* node)
