@@ -63,7 +63,7 @@ int main() //const int argc, const char** argv
 
     ExpressionParamsDtor(&params);
 
-    CompileTexFile("./TexFiles/TexExpressions.tex");
+    CompileTexFile("./TexExpressions.tex");
 
     return 1;
 }
