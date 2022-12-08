@@ -158,8 +158,9 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
 
 int CompileTexFile(const char* filename)
 {
-    char cmd[100] = "pdflatex ";
+    char cmd[150] = "pdflatex -output-directory=./TexFiles";
     strcat(cmd, filename);
+    // strcat(cmd, " -output-directory=./TexFiles");
 
     return system(cmd);
 }

@@ -31,12 +31,12 @@ int main() //const int argc, const char** argv
 
     fclose(expression_file);
 
-    FILE* tex_file = fopen("./TexExpressions.tex", "w");
+    FILE* tex_file = fopen("./TexFiles/TexExpressions.tex", "w");
     WriteHeadOfTexFile(tex_file);
 
     ShowTree(params.expression, SIMPLE_DUMP_MODE);
     SimplifyTree(&params.expression);
-    ShowTree(params.expression, FULL_FULL_DUMP_MODE);
+    ShowTree(params.expression, FULL_FULL_DUMP_MODE, 0);
 
     fprintf(tex_file, "Let's calculate smth with expression given:\n");
     WriteExpressionInTexFile(params.expression, tex_file);
@@ -63,7 +63,7 @@ int main() //const int argc, const char** argv
 
     ExpressionParamsDtor(&params);
 
-    CompileTexFile("./TexExpressions.tex");
+    CompileTexFile("./TexFiles/TexExpressions.tex");
 
     return 1;
 }
