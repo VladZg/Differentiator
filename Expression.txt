@@ -1,8 +1,7 @@
-(((x)-((y)+(AbObA)))/((AbObA)^(z)))
+(((y)-(x))*(e))
 
 x = 1
 y = 2
-z = 3
 
 n_differentiate = 3
 Makloren_accuracy = 2

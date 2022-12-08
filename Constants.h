@@ -7,6 +7,7 @@
 enum Constants
 {
     MAX_NODE_VAL_LEN = 10,
+    WRONG_CALCULATED_NODE = 1423
 };
 
 enum VarsConsts
@@ -15,6 +16,7 @@ enum VarsConsts
     NUM_OF_CONSTANTS = 3,
     MAX_NUM_OF_VAR   = 10 + NUM_OF_CONSTANTS,
     NO_VAR_NAME      = -1,
+    DEFAULT_UNDEFINED_VAR_VALUE = 1,
 };
 
 enum TreeDataType

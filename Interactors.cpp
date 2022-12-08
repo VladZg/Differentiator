@@ -41,7 +41,7 @@ int ReadNodeVal(char* node_val, enum TreeDataType* val_type, enum Operators* op_
         ASSERT(new_var_name != nullptr);
 
         memcpy(new_var_name, node_val, MAX_VAR_NAME_LEN);
-        AddVar(new_var_name, 0, params);
+        AddVar(new_var_name, DEFAULT_UNDEFINED_VAR_VALUE, params);
 
         // fprintf(stdout, "\n\nhere: %s  %ld\n\n", new_var_name, params->n_vars);
     }

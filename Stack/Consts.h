@@ -42,7 +42,7 @@ typedef const int canary_t;
 canary_t LEFT_CANARY  = 0xBCBCBC;
 canary_t RIGHT_CANARY = 0xCBCBCB;
 
-static char  undefined_stk_name[]    = KRED "?" KNRM;
+static char undefined_stk_name[]    = KRED "?" KNRM;
 
 #define UNDEFINED_STK_NAME undefined_stk_name
 // #define LOG_FILE_NAME "Log1.txt"

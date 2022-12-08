@@ -7,6 +7,85 @@
 #include "./Tree.h"
 #include "./TreeSimplifyFunctions.h"
 
+double CalculateOperatorNode(enum Operators op_val, double left_num_val, double right_num_val)
+{
+    switch (op_val)
+    {
+        case OP_ADD:
+            return left_num_val + right_num_val;
+
+        case OP_SUB:
+            return left_num_val - right_num_val;
+
+        case OP_MUL:
+            return left_num_val * right_num_val;
+
+        case OP_DIV:
+            return  left_num_val / right_num_val;
+
+            // if (node->num_val == nan(""))
+            // {
+            //     fprintf(stderr, "Деление на нуль!\n");
+            //     abort();
+            //     return nullptr;
+            // }
+
+        case OP_SQRT:
+            return sqrt(right_num_val);
+
+        // case OP_RT:
+        // {
+        //     node->num_val = pow(left_num_val, right_num_val);
+        //     break;
+        // }
+
+        case OP_DEG:
+            return pow(left_num_val, right_num_val);
+
+        case OP_EXP:
+            return exp(right_num_val);
+
+        // case OP_LOG:
+        //     return log(right_num_val);
+
+        case OP_LN :
+            return log(right_num_val);
+
+        case OP_SIN:
+            return sin(right_num_val);
+
+        case OP_COS:
+            return cos(right_num_val);
+
+        case OP_TG :
+            return tan(right_num_val);
+
+        case OP_CTG:
+            return 1 / tan(right_num_val);
+
+        case OP_CH :
+            return cosh(right_num_val);
+
+        case OP_SH :
+            return sinh(right_num_val);
+
+        case OP_ARCSIN:
+            return asin(right_num_val);
+
+        case OP_ARCCOS:
+            return acos(right_num_val);
+
+        case OP_ARCTG:
+            return atan(right_num_val);
+
+        case OP_ARCCTG:
+            return  M_PI / 2 - atan(right_num_val);
+
+        default:
+            return WRONG_CALCULATED_NODE;
+    }
+}
+
 Node* CalculateConstantSubtrees(Node* node)
 {
     if (!node) return nullptr;
@@ -20,144 +99,9 @@ Node* CalculateConstantSubtrees(Node* node)
 
         if ((left_temp->val_type == NUM_TYPE) && (right_temp->val_type == NUM_TYPE))
         {
-            switch (node->op_val)
-            {
-                case OP_ADD:
-                {
-                    node->num_val = left_temp->num_val + right_temp->num_val;
-                    break;
-                }
-
-                case OP_SUB:
-                {
-                    node->num_val = left_temp->num_val - right_temp->num_val;
-                    break;
-                }
-
-                case OP_MUL:
-                {
-                    node->num_val = left_temp->num_val * right_temp->num_val;
-                    break;
-                }
-
-                case OP_DIV:
-                {
-                    node->num_val = left_temp->num_val / right_temp->num_val;
-
-                    // if (node->num_val == nan(""))
-                    // {
-                    //     fprintf(stderr, "Деление на нуль!\n");
-                    //     abort();
-                    //     return nullptr;
-                    // }
-
-                    break;
-                }
-
-                case OP_SQRT:
-                {
-                    node->num_val = sqrt(right_temp->num_val);
-                    break;
-                }
-
-                // case OP_RT:
-                // {
-                //     node->num_val = pow(left_temp->num_val, right_temp->num_val);
-                //     break;
-                // }
-
-                case OP_DEG:
-                {
-                    node->num_val = pow(left_temp->num_val, right_temp->num_val);
-                    break;
-                }
-
-                case OP_EXP:
-                {
-                    node->num_val = exp(right_temp->num_val);
-                    break;
-                }
-
-                case OP_LOG:
-                {
-                    node->num_val = log(right_temp->num_val);
-                    break;
-                }
-
-                case OP_LN :
-                {
-                    node->num_val = log(right_temp->num_val);
-                    break;
-                }
-
-                case OP_SIN:
-                {
-                    node->num_val = sin(right_temp->num_val);
-                    break;
-                }
-
-                case OP_COS:
-                {
-                    node->num_val = cos(right_temp->num_val);
-                    break;
-                }
-
-                case OP_TG :
-                {
-                    node->num_val = tan(right_temp->num_val);
-                    break;
-                }
-
-                case OP_CTG:
-                {
-                    node->num_val = 1 / tan(right_temp->num_val);
-                    break;
-                }
-
-                case OP_CH :
-                {
-                    node->num_val = cosh(right_temp->num_val);
-                    break;
-                }
-
-                case OP_SH :
-                {
-                    node->num_val = sinh(right_temp->num_val);
-                    break;
-                }
-
-                case OP_ARCSIN:
-                {
-                    node->num_val = asin(right_temp->num_val);
-                    break;
-                }
-
-                case OP_ARCCOS:
-                {
-                    node->num_val = acos(right_temp->num_val);
-                    break;
-                }
-
-                case OP_ARCTG:
-                {
-                    node->num_val = atan(right_temp->num_val);
-                    break;
-                }
-
-                case OP_ARCCTG:
-                {
-                    node->num_val = M_PI / 2 - atan(right_temp->num_val);
-                    break;
-                }
-
-                default:
-                {
-                    return nullptr;
-                }
-            }
-
-            node->op_val = NULL_OP;
+            node->num_val  = CalculateOperatorNode(node->op_val, left_temp->num_val, right_temp->num_val);
             node->val_type = NUM_TYPE;
+            node->op_val   = NULL_OP;
 
             // free(node->left);
             // free(node->right);
@@ -169,6 +113,37 @@ Node* CalculateConstantSubtrees(Node* node)
     }
 
     return node;
+}
+
+double CalculateTree(Node* node, const ExpressionParams* params)
+{
+    ASSERT(node != nullptr)
+    VERIFY_NODE(node)
+
+    double ret_val = WRONG_CALCULATED_NODE;
+
+    if (node->val_type == NUM_TYPE)
+    {
+        ret_val = node->num_val;
+    }
+
+    else if (node->val_type == OP_TYPE)
+    {
+        ASSERT(node->left  != nullptr)
+        ASSERT(node->right != nullptr)
+
+        ret_val = CalculateOperatorNode(node->op_val, CalculateTree(node->left, params), CalculateTree(node->right, params));
+    }
+
+    else if (node->val_type == VAR_TYPE)
+    {
+        int var_index = FindVarIndex(node->var_val, params);
+
+        if(var_index != NO_VAR_NAME)
+            ret_val = params->vars[var_index].value;
+    }
+
+    return ret_val;
 }
 
 #define IS_OP(  op_name ) (node->op_val == op_name       )
