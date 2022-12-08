@@ -26,12 +26,6 @@ struct Tree
     size_t n_nodes;
 };
 
-struct ExpressionVar
-{
-    char*  name;
-    double value;
-};
-
 int NodeVerify (const Node* node);
 int NodeCtor   (Node* node, enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val);
 int NodeDtor   (Node* node);
@@ -39,17 +33,14 @@ int NodeConnect(Node* left, Node* right, Node* root);
 
 Node* CreateNode(enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val, Node* left, Node* right);
 Node* CopyNode(const Node* node);
-Node* CalculateConstantSubtrees(Node* node);
-Node* DestroyNeutralTreeElements(Node* node);
-Node* SimplifyTree(Node** node);
-int IsVarsInTree(Node* node);
+int   IsVarsInTree(Node* node);
+int   IsOperatorWithOneArgument(enum Operators op_val);
 
 int TreeVerify(const Tree* tree);
 int TreeCtor  (Tree* tree);
 int TreeDtor  (Tree* tree);
 
 enum Operators IsOperator(const char* node_val);
-int IsVar(const char* node_val);
 
 void NodeValPrint      (const Node* node, FILE* stream);
 void OperatorPrint     (enum Operators op_code, FILE* stream);

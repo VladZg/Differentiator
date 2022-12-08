@@ -6,9 +6,11 @@
 #include "./Stack/Assert.h"
 #include "./Stack/Stack.h"
 #include "./Tree.h"
-#include "./Differentiation.h"
+#include "./Interactors.h"
+#include "./TexFunctions.h"
 #include "./DiffDSL.h"
-#include "./ReadAndWriteFunctions.h"
+#include "./Differentiation.h"
+#include "./TreeSimplifyFunctions.h"
 
 Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
 {

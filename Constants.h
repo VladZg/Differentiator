@@ -9,6 +9,14 @@ enum Constants
     MAX_NODE_VAL_LEN = 10,
 };
 
+enum VarsConsts
+{
+    MAX_VAR_NAME_LEN = 10,
+    NUM_OF_CONSTANTS = 3,
+    MAX_NUM_OF_VAR   = 10 + NUM_OF_CONSTANTS,
+    NO_VAR_NAME      = -1,
+};
+
 enum TreeDataType
 {
     NULL_TYPE = 0,
