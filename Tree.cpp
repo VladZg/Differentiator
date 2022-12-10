@@ -9,26 +9,129 @@
 
 size_t NodeIndex = 0;
 
-int NodeVerify(const Node* node)
+void WarningMessage(const char* function_name, const char* fmt_msg, ...)
+{
+    va_list args;
+    va_start(args, fmt_msg);
+
+    fprintf(stderr, KYEL "WARNING!!!" KNRM "(" KBLU "%45s" KNRM "): ", function_name);
+    vfprintf(stderr, fmt_msg, args);
+    fprintf(stderr, "\n");
+
+    va_end(args);
+}
+
+// #define WARNING(fmt_msg, ...) \
+{\
+    if (sizeof((int[]){__VA_ARGS__})/sizeof(int) > 0)               \
+        WarningMessage(__PRETTY_FUNCTION__, #fmt_msg, __VA_ARGS__); \
+\
+    else  WarningMessage(__PRETTY_FUNCTION__, #fmt_msg);\
+}
+
+int NodeVerify(const char* function_name, const Node* node)
 {
     if (!node) return 1;
 
-    // if (!node->val_type) return 0;
+    if (node->val_type == NULL_TYPE)
+    {
+        WarningMessage(function_name, "NODE IS EMPTY");
+        return 0;
+    }
 
-    // if (node->val_type == NUM_TYPE)
-    //     if (node->num_val == DEAD_NUM_VAL)
+    if (node->val_type == NUM_TYPE)
+    {
+        if (node->left)
+        {
+            WarningMessage(function_name, "NODE WITH NUMBER HAS LEFT SUBNODE");
+            return 0;
+        }
 
-    // else if (node->val_type == VAR_TYPE)
-    //     if (node->num_val == DEAD_VAR_VAL)
+        if (node->right)
+        {
+            WarningMessage(function_name, "NODE WITH NUMBER HAS RIGHT SUBNODE");
+            return 0;
+        }
+    }
 
-    // else if (node->val_type == OP_TYPE)
-    //     if (node->num_val == DEAD_OP_VAL)
+    if (node->val_type == VAR_TYPE)
+    {
+        if (!node->var_val)
+        {
+            WarningMessage(function_name, "NODE WITH VARIABLE TYPE IS EMPTY");
+            return 0;
+        }
+
+        if (node->left)
+        {
+            WarningMessage(function_name, "NODE WITH VARIABLE HAS LEFT SUBNODE");
+            return 0;
+        }
+
+        if (node->right)
+        {
+            WarningMessage(function_name, "NODE WITH VARIABLE HAS RIGHT SUBNODE");
+            return 0;
+        }
+    }
+
+    if (node->val_type == OP_TYPE )
+    {
+        if (node->op_val == NULL_OP)
+        {
+            WarningMessage(function_name, "NODE WITH OPERATOR %d TYPE IS EMPTY", node->op_val);
+            return 0;
+        }
+
+        if (!node->left)
+        {
+            WarningMessage(function_name, "NODE WITH OPERATOR %d DOESN'T HAVE LEFT SUBNODE", node->op_val);
+            return 0;
+        }
+
+        if (!node->right)
+        {
+            WarningMessage(function_name, "NODE WITH OPERATOR %d DOESN'T HAVE RIGHT SUBNODE", node->op_val);
+            return 0;
+        }
+    }
+
+    if (node->prev)
+    {
+        if (node->prev->left != node && node->prev->right != node)
+        {
+            WarningMessage(function_name, "NODE IS WRONGLY CONNECTED TO IT'S PARENT");
+            return 0;
+        }
+    }
 
     if (node->left)
-        if (!((node == node->left->prev) && NodeVerify(node->left))) return 0;
+    {
+        if (node != node->left->prev)
+        {
+            WarningMessage(function_name, "LEFT SUBNODE'S PREV IS WRONG");
+            return 0;
+        }
+
+        if (!NodeVerify(function_name, node->left)) return 0;
+    }
 
     if (node->right)
-        if (!((node == node->right->prev) && NodeVerify(node->right))) return 0;
+    {
+        if (node != node->right->prev)
+        {
+            WarningMessage(function_name, "RIGHT SUBNODE'S PREV IS WRONG");
+            return 0;
+        }
+
+        if (!NodeVerify(function_name, node->right)) return 0;
+    }
+
+    if ((node->left && node->right) && (node->left == node->right))
+    {
+        WarningMessage(function_name, "LEFT AND RIGHT SUBNODES ARE THE SAME SUBNODE");
+        return 0;
+    }
 
     return 1;
 }
@@ -36,16 +139,29 @@ int NodeVerify(const Node* node)
 int NodeCtor(Node* node, enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val)
 {
     ASSERT(node     != nullptr);
-    // ASSERT(val_type != NULL_TYPE);
+    ASSERT(val_type != NULL_TYPE);
+
+    if (val_type == OP_TYPE && op_val == NULL_OP)
+    {
+        WarningMessage(__PRETTY_FUNCTION__, "TRIED TO CONSTRUCT NODE WITH EMPTY OPERATOR");
+        return 0;
+    }
+
+    if (val_type == VAR_TYPE && !var_val)
+    {
+        WarningMessage(__PRETTY_FUNCTION__, "TRIED TO CONSTRUCT NODE WITH EMPTY VARIABLE");
+        return 0;
+    }
 
     *node = {val_type, op_val, num_val, var_val, nullptr, nullptr, nullptr, NodeIndex++};
 
-    return NodeVerify(node);
+    return 1;
 }
 
 Node* CreateNode(enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val, Node* left, Node* right)
 {
     Node* node = (Node*) calloc(1, sizeof(Node));
+    ASSERT(node != nullptr)
 
     NodeCtor(node, val_type, num_val, var_val, op_val);
     NodeConnect(left, right, node);
@@ -55,18 +171,10 @@ Node* CreateNode(enum TreeDataType val_type, double num_val, const char* var_val
 
 Node* CopyNode(const Node* node)
 {
-    ASSERT(node != nullptr);
+    if (node == nullptr) return nullptr;
 
-    Node* left = nullptr;
-    Node* right = nullptr;
-
-    // HERE(START);
-
-    if (node->left)
-        left = CopyNode(node->left);
-
-    if (node->right)
-        right = CopyNode(node->right);
+    Node* left  = CopyNode(node->left);
+    Node* right = CopyNode(node->right);
 
     char* var_val = nullptr;
 
@@ -77,34 +185,39 @@ Node* CopyNode(const Node* node)
         // fprintf(stderr, "%s\n\n\n", node->var_val);
     }
 
-    return CreateNode(node->val_type, node->num_val, var_val, node->op_val, left, right);
+    Node* new_node = CreateNode(node->val_type, node->num_val, var_val, node->op_val, left, right);
+    new_node->prev = node->prev;
+
+    return new_node;
 }
 
-int NodeDtor(Node* node)
+int NodeDtor(Node** node)
 {
-    // if (!NodeVerify(node)) return 0;
+    ASSERT(node != nullptr);
 
-    if (!node)
-        return 0;
+    if (!VERIFY_NODE(*node)) return 0;
 
-    if (node->left) NodeDtor(node->left);
+    if (!(*node))
+        return 1;
 
-    if (node->right) NodeDtor(node->right);
+    if ((*node)->left)  if(!NodeDtor(&((*node)->left)))  return 0;
 
-    if (node->var_val) free((void*) node->var_val);
+    if ((*node)->right) if(!NodeDtor(&((*node)->right))) return 0;
 
-    node->val_type  = NULL_TYPE;
-    node->var_val   = nullptr;
-    node->num_val   = 0;
-    node->op_val    = NULL_OP;
+    if ((*node)->var_val) free((void*) (*node)->var_val);
 
-    node->left      = nullptr;
-    node->right     = nullptr;
-    node->prev      = nullptr;
+    (*node)->val_type = NULL_TYPE;
+    (*node)->var_val  = nullptr;
+    (*node)->num_val  = 0;
+    (*node)->op_val   = NULL_OP;
+
+    (*node)->left      = nullptr;
+    (*node)->right     = nullptr;
+    (*node)->prev      = nullptr;
     NodeIndex--;
 
-    free(node);
-    node = nullptr;
+    free(*node);
+    *node = nullptr;
 
     return 1;
 }
@@ -114,22 +227,44 @@ int NodeConnect(Node* left, Node* right, Node* root)
     // ASSERT(tree != nullptr);
     ASSERT(root != nullptr);
 
+    // if (!VERIFY_NODE(left))  return 0;
+    // if (!VERIFY_NODE(right)) return 0;
+    // if (!VERIFY_NODE(root))  return 0;
+
     if (root)
     {
+        root->left = left;
+
         if (left)
-        {
-            root->left  = left;
             left->prev  = root;
             // tree->n_nodes++;
-        }
+
+        root->right = right;
 
         if (right)
-        {
-            root->right  = right;
             right->prev  = root;
             // tree->n_nodes++;
-        }
     }
+
+    return VERIFY_NODE(root);
+}
+
+Node* ReplaceNode(Node** replacing_node, Node* new_node)
+{
+    new_node->prev = (*replacing_node)->prev;
+
+    NodeDtor(replacing_node);
+    *replacing_node = new_node;
+
+    return *replacing_node;
+}
+
+int SwapNodes(Node** node1, Node** node2)
+{
+    Node* temp_node = *node1;
+
+    *node1 = *node2;
+    *node2 = temp_node;
 
     return 1;
 }
@@ -146,7 +281,7 @@ int TreeVerify(const Tree* tree)
     //     return 0;
     // }
 
-    return NodeVerify(tree->root);
+    return VERIFY_NODE(tree->root);
 }
 
 int TreeCtor(Tree* tree)
@@ -164,7 +299,25 @@ int TreeDtor(Tree* tree)
 
     tree->n_nodes = 0;
 
-    return NodeDtor(tree->root);
+    return NodeDtor(&(tree->root));
+}
+
+size_t TreeDepth(const Node* node)
+{
+    if (node == nullptr) return 0;
+
+    size_t left_depth  = 0;
+    size_t right_depth = 0;
+
+    if (node->left)
+        left_depth = TreeDepth(node->left);
+
+    if (node->right)
+        right_depth = TreeDepth(node->right);
+
+    // fprintf(stdout, "%ld %ld\n", left_depth, right_depth);
+
+    return 1 + (left_depth > right_depth ? left_depth : right_depth); //max(left_depth, right_depth);
 }
 
 
@@ -213,6 +366,7 @@ void OperatorPrint(enum Operators op_code, FILE* stream)
     if (op_code == OP_MUL   ) { fprintf(stream, "*"     ); return; }
     if (op_code == OP_DIV   ) { fprintf(stream, "/"     ); return; }
     if (op_code == OP_DEG   ) { fprintf(stream, "^"     ); return; }
+    if (op_code == OP_EXP   ) { fprintf(stream, "exp"   ); return; }
     if (op_code == OP_SQRT  ) { fprintf(stream, "sqrt"  ); return; }
     // if (op_code == OP_RT)  { fprintf(stream, "root"); return; }
     if (op_code == OP_LOG   ) { fprintf(stream, "log"   ); return; }
@@ -235,18 +389,17 @@ int IsVarsInTree(Node* node)
 {
     if (!node) return 0;
 
-    NodeVerify(node);
+    VERIFY_NODE(node);
 
     if (node->val_type == VAR_TYPE)
         return 1;
 
     if (node->val_type == OP_TYPE)
     {
-        if (node->left)
-            if (IsVarsInTree(node->left)) return 1;
+        ASSERT(node->left  != nullptr)
+        ASSERT(node->right != nullptr)
 
-        if (node->right)
-            if (IsVarsInTree(node->right)) return 1;
+        if (IsVarsInTree(node->left) || IsVarsInTree(node->right)) return 1;
     }
 
     return 0;

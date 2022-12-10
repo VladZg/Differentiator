@@ -6,20 +6,34 @@
 #include "./Stack/Assert.h"
 #include "./Stack/Stack.h"
 #include "./Tree.h"
+#include "./TreeDump.h"
 #include "./Interactors.h"
 #include "./TexFunctions.h"
 #include "./DiffDSL.h"
 #include "./Differentiation.h"
 #include "./TreeSimplifyFunctions.h"
 
-Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
+Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 {
+    // return CopyNode(node);
+
+    // if (!VERIFY_NODE(node)) return nullptr;
+
     ASSERT(tex_file != nullptr);
-    ASSERT(n_step != nullptr);
+    ASSERT(n_step   != nullptr);
 
     if (!node) return nullptr;
 
     ASSERT(node != nullptr);
+
+    if (tex_mode == PRINT_STEPS_TEX_MODE)
+    {
+        fprintf(tex_file, "%ld step:\n"
+                        "finding a derivation of function:\n", *n_step);
+        WriteExpressionInTexFile(node, tex_file);
+    }
+
+    // ShowTree(node, FULL_FULL_DUMP_MODE, 0);
 
     Node* differed_node = nullptr;
 
@@ -55,13 +69,13 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
 
                 case OP_MUL:
                 {
-                    differed_node = ADD(MUL(CL, DR), MUL(CR, DL));
+                    differed_node = ADD(MUL(DL, CR), MUL(DR, CL));
                     break;
                 }
 
                 case OP_DIV:
                 {
-                    differed_node = DIV(SUB(MUL(DL, CR), MUL(CL, DR)), DEG(CR, CREATE_NUM(2)));
+                    differed_node = DIV(SUB(MUL(DL, CR), MUL(DR, CL)), DEG(CR, CREATE_NUM(2)));
                     break;
                 }
 
@@ -123,37 +137,37 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
 
                 case OP_SIN:
                 {
-                    differed_node = MUL(COS(node->right), DR);
+                    differed_node = MUL(COS(CR), DR);
                     break;
                 }
 
                 case OP_COS:
                 {
-                    differed_node = MUL(MUL(CREATE_NUM(-1), SIN(node->right)), DR);
+                    differed_node = MUL(MUL(CREATE_NUM(-1), SIN(CR)), DR);
                     break;
                 }
 
                 case OP_TG:
                 {
-                    differed_node = MUL(DIV(CREATE_NUM(1), DEG(COS(node->right), CREATE_NUM(2))), DR);
+                    differed_node = MUL(DIV(CREATE_NUM(1), DEG(COS(CR), CREATE_NUM(2))), DR);
                     break;
                 }
 
                 case OP_CTG:
                 {
-                    differed_node = MUL(DIV(CREATE_NUM(-1), DEG(SIN(node->right), CREATE_NUM(2))), DR);
+                    differed_node = MUL(DIV(CREATE_NUM(-1), DEG(SIN(CR), CREATE_NUM(2))), DR);
                     break;
                 }
 
                 case OP_SH:
                 {
-                    differed_node = MUL(CH(node->right), DR);
+                    differed_node = MUL(CH(CR), DR);
                     break;
                 }
 
                 case OP_CH:
                 {
-                    differed_node = MUL(SH(node->right), DR);
+                    differed_node = MUL(SH(CR), DR);
                     break;
                 }
 
@@ -185,64 +199,99 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step)
                     break;
                 }
 
-                default: return nullptr;
+                default:
+                {
+                    fprintf(stderr, "NO SUCH OPERATION");
+                    abort();
+                }
             }
 
             break;
         }
 
-        default: return nullptr;
+        default: return node;
     }
 
-    //   SimplifyTree(&differed_node);
+    // ShowTree(differed_node, FULL_FULL_DUMP_MODE, 0);
 
-//     fprintf(tex_file, "%ld step:\n"
-//                       "finding a derivation of funtion:\n", (*n_step)++);
-//     WriteExpressionInTexFile(node, tex_file);
+    // VERIFY_NODE(differed_node);
+    differed_node = SimplifyTree(&differed_node);
+
+    if (tex_mode == PRINT_STEPS_TEX_MODE)
+    {
+        fprintf(tex_file, "here it is:\n");
+        WriteExpressionInTexFile(differed_node, tex_file);
+    }
+
+//     ShowTree(node, SIMPLE_DUMP_MODE, 0);
+//     ShowTree(node, FULL_FULL_DUMP_MODE, 0);
 //
-//     fprintf(tex_file, "here it is:\n");
-//     WriteExpressionInTexFile(differed_node, tex_file);
+//     ShowTree(differed_node, SIMPLE_DUMP_MODE, 0);
+//     ShowTree(differed_node, FULL_FULL_DUMP_MODE, 0);
+
+    (*n_step)++;
 
     return differed_node;
 }
 
-Node* NDiff(Node* node, size_t n, FILE* tex_file)
+Node* NDifferentiate(Node* node, size_t n_diff, FILE* tex_file, enum TexModes tex_mode)
 {
-    if (n == 0) return node;
+    Node* diff0 = CopyNode(node);
 
-    Node** differed_nodes = (Node**) calloc(n, sizeof(Node*));
-    differed_nodes[0] = node;
+    if (n_diff == 0) return diff0;
 
-    for (size_t i = 0; i < n; i++)
+    Node** differed_nodes = (Node**) calloc(n_diff + 1, sizeof(Node*));
+    differed_nodes[0] = diff0;
+
+    int is_tex_print = tex_mode == PRINT_STEPS_TEX_MODE;
+
+    for (size_t i = 0; i < n_diff; i++)
     {
-        fprintf(tex_file, "Calculating the %ld derivation of the expression:\n\n"
-                          "It's easy, just differentiating the %ld derivation\n\n", i+1, i);
+        if (is_tex_print)
+            fprintf(tex_file, "Calculating the %ld derivation of the expression:\n\n", i+1);
 
-        differed_nodes[i+1] = Differentiate(differed_nodes[i], tex_file);
+        differed_nodes[i+1] = Differentiate(differed_nodes[i], tex_file, tex_mode);
+        // differed_nodes[i+1] = CopyNode(differed_nodes[i]);
 
-        fprintf(tex_file, "Thus, the %ld derivation:\n", i+1);
+        // ShowTree(differed_nodes[i+1], SIMPLE_DUMP_MODE, 0);
 
-        WriteExpressionInTexFile(differed_nodes[i+1], tex_file);
+        // if (is_tex_print)
+        // {
+        //     fprintf(tex_file, "Thus, the %ld derivation:\n", i+1);
+        //     WriteExpressionInTexFile(differed_nodes[i+1], tex_file);
+        // }
     }
 
-    Node* n_differed_node = differed_nodes[n];
+    // TreeInorderPrint(differed_nodes[3], stdout);
+    fprintf(stdout, "\n");
 
-    for (size_t i = 1; i < n; i++) free(differed_nodes[i]);
+    // ShowTree(differed_nodes[n_diff], FULL_FULL_DUMP_MODE, 0);
+
+    Node* n_differed_node = CopyNode(differed_nodes[n_diff]);
+
+    // ShowTree(differed_nodes[n_diff], FULL_FULL_DUMP_MODE, 0);
+    // ShowTree(n_differed_node, FULL_FULL_DUMP_MODE, 0);
+
+    // HERE(5)
+
+    for (size_t i = 0; i <= n_diff; i++) NodeDtor(&differed_nodes[i]);
 
     free(differed_nodes);
+
+    // ShowTree(n_differed_node, SIMPLE_DUMP_MODE, 1);
 
     return n_differed_node;
 }
 
-Node* Differentiate(Node* node, FILE* tex_file)
+Node* Differentiate(Node* node, FILE* tex_file, enum TexModes tex_mode)
 {
-    SimplifyTree(&node);
+    node = SimplifyTree(&node);
 
     size_t n_step = 1;
 
-    Node* differed_node = Diff(node, tex_file, &n_step);
+    Node* differed_node = Diff(node, tex_file, &n_step, tex_mode);
 
-    SimplifyTree(&differed_node);
+    // differed_node = SimplifyTree(&differed_node);
 
     return differed_node;
 }

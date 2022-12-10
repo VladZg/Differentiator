@@ -7,7 +7,8 @@
 enum Constants
 {
     MAX_NODE_VAL_LEN = 10,
-    WRONG_CALCULATED_NODE = 1423
+    WRONG_CALCULATED_NODE = 1423,
+    MAX_UNREPLACEBLE_TREE_DEPTH = 10,
 };
 
 enum VarsConsts
@@ -59,10 +60,28 @@ enum OpTexPrintModes
     OP_TEX_INPRINT          ,
 };
 
-enum DumpModes
+enum TreeDumpModes
 {
     SIMPLE_DUMP_MODE   ,
     FULL_FULL_DUMP_MODE,
+};
+
+enum TexModes
+{
+    PRINT_STEPS_TEX_MODE = 1,
+    SKIP_STEPS_TEX_MODE  = 0,
+};
+
+enum NodeVerifyCodes
+{
+    NODE_IS_OK_CODE = 0            ,
+    NODE_IS_EMPTY_CODE             ,
+    VAR_NODE_IS_EMPTY_CODE         ,
+    OP_NODE_IS_EMPTY_CODE          ,
+    NO_LEFT_SUBNODE_CODE           ,
+    NO_RIGHT_SUBNODE_CODE          ,
+    PARENT_CONNECTION_IS_WRONG_CODE,
+
 };
 
 // #define TEXT_FOR_PRONOUNCING_FILENAME  "./TextForPronouncing.txt"
@@ -70,5 +89,7 @@ enum DumpModes
 // #define TEXT_FOR_DOT_DUMP_FILENAME     "./DumpInfo/TextForDatabaseDump.dot"
 // #define DATABASE_DUMP_PICTURE_FILENAME "DatabaseDump.svg"
 // #define DATABASE_DUMP_PICTURE_FOLDER   "./DumpInfo/"
+
+// const char Tree_replacements[] = {'A', 'B', 'C', 'D'}
 
 #endif

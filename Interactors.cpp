@@ -6,6 +6,7 @@
 #include "./Stack/Assert.h"
 #include "./Tree.h"
 #include "./Interactors.h"
+#include "./TreeSimplifyFunctions.h"
 
 int ReadNodeVal(char* node_val, enum TreeDataType* val_type, enum Operators* op_val, double* num_val, const char** var_val, ExpressionParams* params)
 {
@@ -35,7 +36,7 @@ int ReadNodeVal(char* node_val, enum TreeDataType* val_type, enum Operators* op_
 
     // fprintf(stdout, "\n\nhere: %s\n\n", node_val);
 
-    if (FindVarIndex(node_val, params) == NO_VAR_NAME)
+    if (FindVarIndex(node_val, params->vars, params->n_vars) == NO_VAR_NAME)
     {
         char* new_var_name = (char*) calloc(MAX_VAR_NAME_LEN, sizeof(char));
         ASSERT(new_var_name != nullptr);
@@ -119,9 +120,8 @@ Node* ReadExpressionToTree(FILE* expression_file, ExpressionParams* params)
 
     else
     {
-        fprintf(stderr, "Database is damaged!!!");
-        // abort();
-        return nullptr;
+        fprintf(stderr, "Expression is damaged!!!");
+        abort();
     }
 }
 
@@ -131,10 +131,15 @@ int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
 
     AddConstants(params);
 
-    params->expression = ReadExpressionToTree(expression_file, params);
+    params->expression = (Node**) calloc(1, sizeof(Node*));
+    ASSERT(params->expression != nullptr);
+
+    *(params->expression) = ReadExpressionToTree(expression_file, params);
 
     fgetc(expression_file);
     fgetc(expression_file); // пропуск строки
+
+    // fprintf(stdout, "%ld\n", params->n_vars);
 
     for (size_t var_i = NUM_OF_CONSTANTS; var_i < params->n_vars; var_i++)
     {
@@ -143,20 +148,24 @@ int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
 
         fscanf(expression_file, " %s = %lf", var_name, &var_val);
 
-        int var_index = FindVarIndex(var_name, params);
+        int var_index = FindVarIndex(var_name, params->vars, params->n_vars);
 
         if (var_index != NO_VAR_NAME)
             params->vars[var_index].value = var_val;
 
-        // else fprintf(stderr, "NO VARIABLES?");
+        else
+        {
+            fprintf(stderr, "VARS NOT INITIALIZED!!!");
+            abort();
+        }
     }
 
-    fgetc(expression_file); // пропуск строки
+    if (params->n_vars != NUM_OF_CONSTANTS) fgetc(expression_file); // пропуск строки
 
     fscanf(expression_file, " n_differentiate   = %ld ", &(params->n_differentiate));
     fscanf(expression_file, " Makloren_accuracy = %ld ", &(params->Makloren_accuracy));
 
-    // AddConstants(params);
+    InsertConstsInExpression(*(params->expression), params);
 
     return 1;
 }
@@ -168,27 +177,27 @@ int AddVar(char* var_name, double var_val, ExpressionParams* params)
     return 1;
 }
 
-int FindVarIndex(const char* var_name, const ExpressionParams* params)
+int FindVarIndex(const char* var_name, const ExpressionVar* vars, size_t n_vars)
 {
-    for (size_t var_i = 0; var_i < params->n_vars; var_i++)
+    for (size_t var_i = 0; var_i < n_vars; var_i++)
     {
-        if (!strcasecmp(var_name, params->vars[var_i].name))
+        if (!strcasecmp(var_name, vars[var_i].name))
             return var_i;
     }
 
     return NO_VAR_NAME;
 }
 
-#define DEF_CONST(name, const_value)                            \
-{                                                               \
-    int var_index = FindVarIndex(#name, params);                \
-                                                                \
-    if (var_index == NO_VAR_NAME)                               \
-    {                                                           \
-        char* const_name = (char*) calloc(MAX_VAR_NAME_LEN, sizeof(char));\
-        memcpy(const_name, #name, strlen(#name));\
-        AddVar(const_name, (double) const_value, params);       \
-    }                                                           \
+#define DEF_CONST(name, const_value)                                       \
+{                                                                          \
+    int var_index = FindVarIndex(#name, params->vars, params->n_vars);     \
+                                                                           \
+    if (var_index == NO_VAR_NAME)                                          \
+    {                                                                      \
+        char* const_name = (char*) calloc(MAX_VAR_NAME_LEN, sizeof(char)); \
+        memcpy(const_name, #name, strlen(#name));                          \
+        AddVar(const_name, (double) const_value, params);                  \
+    }                                                                      \
 }
 
 int AddConstants(ExpressionParams* params)
@@ -221,11 +230,29 @@ void ExpressionParamsDump(FILE* stream, ExpressionParams* params)
                     "!-Macloren's accuracy:      %ld\n\n", params->n_differentiate, params->Makloren_accuracy);
 }
 
+void PrintParametersPoint(FILE* stream, const ExpressionParams* params)
+{
+    if (params->n_vars == NUM_OF_CONSTANTS) return;
+
+    fprintf(stream, "IN THE POINT (");
+
+    for (size_t var_i = NUM_OF_CONSTANTS; var_i < params->n_vars - 1; var_i++)
+    {
+        fprintf(stream, "%s = %lf, ", params->vars[var_i].name, params->vars[var_i].value);
+    }
+
+    fprintf(stream, "%s = %lf", params->vars[params->n_vars-1].name, params->vars[params->n_vars-1].value);
+
+    fprintf(stream, ")");
+}
+
 int ExpressionParamsDtor(ExpressionParams* params)
 {
     ASSERT(params  != nullptr);
 
     NodeDtor(params->expression);
+    free(params->expression);
+
     params->Makloren_accuracy = 0;
     params->n_differentiate   = 0;
 

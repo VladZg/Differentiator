@@ -26,9 +26,11 @@ struct Tree
     size_t n_nodes;
 };
 
-int NodeVerify (const Node* node);
+void WarningMessage(const char* function_name, const char* fmt_msg, ...);
+
+int NodeVerify (const char* function_name, const Node* node);
 int NodeCtor   (Node* node, enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val);
-int NodeDtor   (Node* node);
+int NodeDtor   (Node** node);
 int NodeConnect(Node* left, Node* right, Node* root);
 
 Node* CreateNode(enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val, Node* left, Node* right);
@@ -36,9 +38,13 @@ Node* CopyNode(const Node* node);
 int   IsVarsInTree(Node* node);
 int   IsOperatorWithOneArgument(enum Operators op_val);
 
+Node* ReplaceNode(Node** replacing_node, Node* new_node);
+int SwapNodes(Node** node1, Node** node2);
+
 int TreeVerify(const Tree* tree);
 int TreeCtor  (Tree* tree);
 int TreeDtor  (Tree* tree);
+size_t TreeDepth(const Node* node);
 
 enum Operators IsOperator(const char* node_val);
 
@@ -56,8 +62,7 @@ void TreePostorderPrint(const Node* node, FILE* stream);
 #define VERIFY_TREE( tree_ptr )     \
     if (!TreeVerify(tree_ptr)) return 0;
 
-#define VERIFY_NODE( node_ptr )     \
-    if (!NodeVerify(node_ptr)) return 0;
+#define VERIFY_NODE( node_ptr ) NodeVerify(__PRETTY_FUNCTION__, node_ptr)
 
 #else
 

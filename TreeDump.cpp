@@ -24,7 +24,7 @@ static const char* NodeDataType(const Node* node)
     return "NULL";
 }
 
-int TreeCreateFullDotNodes(const Node* node, FILE* dot_file, enum DumpModes dump_mode)
+int TreeCreateFullDotNodes(const Node* node, FILE* dot_file, enum TreeDumpModes dump_mode)
 {
     ASSERT(node != nullptr);
     ASSERT(dot_file != nullptr);
@@ -48,8 +48,8 @@ int TreeCreateFullDotNodes(const Node* node, FILE* dot_file, enum DumpModes dump
 
         NodeValPrint(node, dot_file);
 
-        fprintf(dot_file, " } | <prev> prev:\\n%p | { <left> left:\\n%p | <right> right:\\n%p }}\"];\n",
-                        (void*) node->prev, (void*) node->left, (void*) node->right);
+        fprintf(dot_file, " } | { <this> this:\\n%p | <prev> prev:\\n%p } | { <left> left:\\n%p | <right> right:\\n%p }}\"];\n",
+                        (void*) node, (void*) node->prev, (void*) node->left, (void*) node->right);
     }
 
     else return 0;
@@ -61,7 +61,7 @@ int TreeCreateFullDotNodes(const Node* node, FILE* dot_file, enum DumpModes dump
     return 1;
 }
 
-int TreeCreateFullDotEdges(const Node* node, FILE* dot_file, enum DumpModes dump_mode)
+int TreeCreateFullDotEdges(const Node* node, FILE* dot_file, enum TreeDumpModes dump_mode)
 {
     ASSERT(node != nullptr);
     ASSERT(dot_file != nullptr);
@@ -94,11 +94,13 @@ int TreeCreateFullDotEdges(const Node* node, FILE* dot_file, enum DumpModes dump
     return 1;
 }
 
-int TreeFullDotDump(const Node* node, FILE* dot_file, enum DumpModes dump_mode)
+int TreeFullDotDump(const Node* node, FILE* dot_file, enum TreeDumpModes dump_mode)
 {
     ASSERT(node != nullptr);
     ASSERT(dot_file != nullptr);
     // VERIFY_NODE(node);
+
+    VERIFY_NODE(node);
 
     fprintf(dot_file, "digraph G{\n");
 
@@ -119,10 +121,12 @@ int TreeFullDotDump(const Node* node, FILE* dot_file, enum DumpModes dump_mode)
     return 1;
 }
 
-int ShowTree(const Node* node, enum DumpModes dump_mode, int open_html_dump)
+int ShowTree(const Node* node, enum TreeDumpModes dump_mode, int open_html_dump)
 {
     ASSERT(node != nullptr);
     // VERIFY_NODE(node);
+
+    VERIFY_NODE(node);
 
     FILE* dot_file = fopen("./TreeDump/TextForTreeDump.dot", "w");
     ASSERT(dot_file != nullptr);

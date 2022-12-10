@@ -28,6 +28,8 @@ int WriteExpressionInTexFile(const Node* node, FILE* tex_file)
     ASSERT(node     != nullptr);
     ASSERT(tex_file != nullptr);
 
+    VERIFY_NODE(node);
+
     fprintf(tex_file, "\\[");
 
     TranslateTreeToTex(node, tex_file);
@@ -105,6 +107,18 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
 
     if (!node) return 1;
 
+//     if (TreeDepth(node) == MAX_UNREPLACEBLE_TREE_DEPTH)
+//     {
+//         fprintf(tex_file, "{");
+//
+//         fprintf(tex_file, "(replacement)");
+//         // NodeValPrint(node, tex_file);
+//
+//         fprintf(tex_file, "}");
+//
+//         return 1;
+//     }
+
     if (node->val_type == OP_TYPE)
     {
         if (!((node->left) && (node->right))) return 0;
@@ -149,7 +163,14 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
 
     // if (IsPrintableNode(node)) NodeValPrint(node, tex_file);
 
+    int is_negative_num = (node->val_type == NUM_TYPE &&
+                           node->num_val < 0 && node->prev ? 1 : 0);
+
+    if (is_negative_num) fprintf(tex_file, "(");
+
     NodeValPrint(node, tex_file);
+
+    if (is_negative_num) fprintf(tex_file, ")");
 
     fprintf(tex_file, "}");
 

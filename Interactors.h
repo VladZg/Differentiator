@@ -13,7 +13,7 @@ struct ExpressionVar
 
 struct ExpressionParams
 {
-    Node* expression;
+    Node** expression;
 
     ExpressionVar* vars;
     size_t         n_vars;
@@ -29,7 +29,8 @@ int   ReadExpressionParams(FILE* expression_file, ExpressionParams* params);
 int   ExpressionParamsDtor(ExpressionParams* params);
 void  ExpressionParamsDump(FILE* stream, ExpressionParams* params);
 
-int FindVarIndex(const char* var_name, const ExpressionParams* params);
+void PrintParametersPoint(FILE* stream, const ExpressionParams* params);
+int FindVarIndex(const char* var_name, const ExpressionVar* vars, size_t n_vars);
 int AddVar(char* var_name, double var_val, ExpressionParams* params);
 int AddConstants(ExpressionParams* params);
 
