@@ -8,10 +8,41 @@
 #include "./Tree.h"
 #include "./TreeDump.h"
 #include "./Interactors.h"
-#include "./TexFunctions.h"
+#include "./TexTreeTranslateFunctions.h"
 #include "./DiffDSL.h"
-#include "./Differentiation.h"
+#include "./MathFunctions.h"
 #include "./TreeSimplifyFunctions.h"
+
+double CalculateTree(Node* node, const ExpressionParams* params)
+{
+    ASSERT(node != nullptr)
+    VERIFY_NODE(node);
+
+    double ret_val = WRONG_CALCULATED_NODE;
+
+    if (node->val_type == NUM_TYPE)
+    {
+        ret_val = node->num_val;
+    }
+
+    else if (node->val_type == OP_TYPE)
+    {
+        ASSERT(node->left  != nullptr)
+        ASSERT(node->right != nullptr)
+
+        ret_val = CalculateOperatorNode(node->op_val, CalculateTree(node->left, params), CalculateTree(node->right, params));
+    }
+
+    else if (node->val_type == VAR_TYPE)
+    {
+        int var_index = FindVarIndex(node->var_val, params->vars, params->n_vars);
+
+        if(var_index != NO_VAR_NAME)
+            ret_val = params->vars[var_index].value;
+    }
+
+    return ret_val;
+}
 
 Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 {
@@ -24,14 +55,7 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 
     if (!node) return nullptr;
 
-    ASSERT(node != nullptr);
-
-    if (tex_mode == PRINT_STEPS_TEX_MODE)
-    {
-        fprintf(tex_file, "%ld step:\n"
-                        "finding a derivation of function:\n", *n_step);
-        WriteExpressionInTexFile(node, tex_file);
-    }
+    ASSERT(node != nullptr)
 
     // ShowTree(node, FULL_FULL_DUMP_MODE, 0);
 
@@ -219,6 +243,10 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 
     if (tex_mode == PRINT_STEPS_TEX_MODE)
     {
+        fprintf(tex_file, "%ld step:\n"
+                        "finding a derivation of function:\n", *n_step);
+        WriteExpressionInTexFile(node, tex_file);
+
         fprintf(tex_file, "here it is:\n");
         WriteExpressionInTexFile(differed_node, tex_file);
     }
@@ -291,7 +319,7 @@ Node* Differentiate(Node* node, FILE* tex_file, enum TexModes tex_mode)
 
     Node* differed_node = Diff(node, tex_file, &n_step, tex_mode);
 
-    // differed_node = SimplifyTree(&differed_node);
+    differed_node = SimplifyTree(&differed_node);
 
     return differed_node;
 }

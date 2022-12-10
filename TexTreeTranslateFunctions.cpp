@@ -6,22 +6,7 @@
 #include "./Stack/Assert.h"
 #include "./Tree.h"
 #include "./Interactors.h"
-#include "./TexFunctions.h"
-
-int WriteHeadOfTexFile(FILE* tex_file)
-{
-    fprintf(tex_file, "\\documentclass{article}\n"
-                      "\\begin{document}\n\n"); //"\\userpackage[papersize={13cm,8cm}\n\n");
-
-    return 1;
-}
-
-int WriteTailOfTexFile(FILE* tex_file)
-{
-    fprintf(tex_file, "\\end{document}\n");
-
-    return 1;
-}
+#include "./TexTreeTranslateFunctions.h"
 
 int WriteExpressionInTexFile(const Node* node, FILE* tex_file)
 {
@@ -176,15 +161,3 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
 
     return 1;
 }
-
-int CompileTexFile(const char* filename)
-{
-    // system("cd ./TexFiles");
-
-    char cmd[100] = "cd ./TexFiles; pdflatex ";
-    strcat(cmd, filename);
-    // strcat(cmd, " -output-directory=./TexFiles");
-
-    return system(cmd);
-}
-

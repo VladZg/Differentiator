@@ -163,37 +163,6 @@ int InsertConstsInExpression(Node* node, const ExpressionParams* params)
     return 1;
 }
 
-double CalculateTree(Node* node, const ExpressionParams* params)
-{
-    ASSERT(node != nullptr)
-    VERIFY_NODE(node);
-
-    double ret_val = WRONG_CALCULATED_NODE;
-
-    if (node->val_type == NUM_TYPE)
-    {
-        ret_val = node->num_val;
-    }
-
-    else if (node->val_type == OP_TYPE)
-    {
-        ASSERT(node->left  != nullptr)
-        ASSERT(node->right != nullptr)
-
-        ret_val = CalculateOperatorNode(node->op_val, CalculateTree(node->left, params), CalculateTree(node->right, params));
-    }
-
-    else if (node->val_type == VAR_TYPE)
-    {
-        int var_index = FindVarIndex(node->var_val, params->vars, params->n_vars);
-
-        if(var_index != NO_VAR_NAME)
-            ret_val = params->vars[var_index].value;
-    }
-
-    return ret_val;
-}
-
 #define IS_OP(  op_name ) ((*node)->op_val == op_name    )
 #define IS_NUM( node_ptr) (node_ptr->val_type == NUM_TYPE)
 #define IS_ZERO(node_ptr) (node_ptr->num_val == 0        )
@@ -498,7 +467,7 @@ Node* SimplifyTree(Node** node)
 
     if (*node) return *node;
 
-    WarningMessage(__PRETTY_FUNCTION__, "NODE SIMPLIFIED WRONGLY");
+    WarningMessage(__PRETTY_FUNCTION__, "TREE SIMPLIFIED WRONGLY");
     abort();
 
     return nullptr;

@@ -165,7 +165,7 @@ int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
     fscanf(expression_file, " n_differentiate   = %ld ", &(params->n_differentiate));
     fscanf(expression_file, " Makloren_accuracy = %ld ", &(params->Makloren_accuracy));
 
-    InsertConstsInExpression(*(params->expression), params);
+    // InsertConstsInExpression(*(params->expression), params);
 
     return 1;
 }
