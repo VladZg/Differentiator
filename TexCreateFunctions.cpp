@@ -20,6 +20,7 @@
 #include "./TexCreateFunctions.h"
 
 int Tex_page_width = TEX_PAGE_WIDTH;
+int N_graphs = 0;
 
 int WriteHeadOfTexFile(FILE* tex_file)
 {
@@ -349,6 +350,11 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
         WriteExpressionInTexFile(tangent_equation, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
 
+        char tangent_equation_graph_diapason[40] = {};
+        sprintf(tangent_equation_graph_diapason, "[%.2lf:%.2lf]", params->tangent_point - 10.0, params->tangent_point + 10.0);
+        CreateGraph(tangent_equation, tangent_equation_graph_diapason, tex_file);
+        TEX_PRINT("\n\n");
+
         if (tangent_coefficient != 0)
         {
             double normal_coefficient = -1 / tangent_coefficient;
@@ -360,11 +366,15 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
                                         CREATE_NUM(function_of_the_first_var_value_in_point));
             normal_equation = SimplifyTree(&normal_equation);
 
-
             TEX_PRINT("\\textbf{Normal equation} in the point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf: \n\n", params->vars[NUM_OF_CONSTANTS].name, params->tangent_point);
             TEX_PRINT("f(%s) = ", params->vars[NUM_OF_CONSTANTS].name);
             WriteExpressionInTexFile(normal_equation, tex_file, INPRINT_MODE);
-            TEX_PRINT("\n");
+            TEX_PRINT("\n\n");
+
+            char normal_equation_graph_diapason[40] = {};
+            sprintf(normal_equation_graph_diapason, "[%.2lf:%.2lf]", params->tangent_point - 10.0, params->tangent_point + 10.0);
+            CreateGraph(normal_equation, normal_equation_graph_diapason, tex_file);
+            TEX_PRINT("\n\n");
 
             NodeDtor(&normal_equation);
         }
@@ -460,6 +470,46 @@ int TranslateTreeToGnuplotFormula(const Node* node, char* formula)
     return 1;
 }
 
+int CreateGraph(const Node* function_of_one_variable, const char* var_diapasone, FILE* tex_file)
+{
+    ASSERT(function_of_one_variable!= nullptr)
+    ASSERT(tex_file                != nullptr)
+
+    char function_gnu_formula[300] = {};
+
+    TranslateTreeToGnuplotFormula(function_of_one_variable, function_gnu_formula);
+
+    char filename[50] = "GnuGraph";
+    char file_num[5] = {};
+    sprintf(file_num, "%d", N_graphs++);
+    strcat(filename, file_num);
+
+    char full_text_filename[100] = {};
+    sprintf(full_text_filename, "./TexFiles/%s.txt", filename);
+
+    FILE* tangent_equation_graph_file = fopen(full_text_filename, "w");
+
+    fprintf(tangent_equation_graph_file, "set terminal png\n"
+                            "set output \"./TexFiles/%s.png\"\n"
+                            "plot %s %s\n",
+                            filename, var_diapasone, function_gnu_formula);
+
+    fprintf(tangent_equation_graph_file, "set terminal eps\n"
+                            "set output \"./TexFiles/%s.eps\"\n"
+                            "plot %s %s\n",
+                            filename, var_diapasone, function_gnu_formula);
+
+    fclose(tangent_equation_graph_file);
+
+    char cmd[120] = {};
+    sprintf(cmd, "gnuplot %s", full_text_filename);
+    system(cmd);
+
+    TEX_PRINT("\\includegraphics[scale=1]{%s.eps}\n\n", filename);
+
+    return 1;
+}
+
 int GraphOfFunction(Node* function_of_the_first_variable, ExpressionParams* params, FILE* tex_file)
 {
     ASSERT(params     != nullptr)
@@ -471,26 +521,28 @@ int GraphOfFunction(Node* function_of_the_first_variable, ExpressionParams* para
     WriteExpressionInTexFile(function_of_the_first_variable, tex_file, INPRINT_MODE);
     TEX_PRINT(" on the diapasone $%s \\in %s$ :\n\n", params->vars[NUM_OF_CONSTANTS].name, params->graph_diapasone);
 
-    char function_gnu_formula[300] = {};
-    TranslateTreeToGnuplotFormula(function_of_the_first_variable, function_gnu_formula);
+//     char function_gnu_formula[300] = {};
+//     TranslateTreeToGnuplotFormula(function_of_the_first_variable, function_gnu_formula);
+//
+//     FILE* graph_file = fopen("./TexFiles/GnuGraph.txt", "w");
+//
+//     fprintf(graph_file, "set terminal png\n"
+//                         "set output \"./TexFiles/GnuGraph.png\"\n"
+//                         "plot %s %s\n", params->graph_diapasone, function_gnu_formula);
+//
+//     fprintf(graph_file, "set terminal eps\n"
+//                         "set output \"./TexFiles/GnuGraph.eps\"\n"
+//                         "plot %s %s\n", params->graph_diapasone, function_gnu_formula);
+//
+//     fclose(graph_file);
+//
+//     system("gnuplot ./TexFiles/GnuGraph.txt");
+//
+//     // system("convert ./TexFiles/GnuGraph.png ./TexFiles/GnuGraph.eps");
+//
+//     TEX_PRINT("\\includegraphics[scale=1]{GnuGraph.eps}\n\n");
 
-    FILE* graph_file = fopen("./TexFiles/GnuGraph.txt", "w");
-
-    fprintf(graph_file, "set terminal png\n"
-                        "set output \"./TexFiles/GnuGraph.png\"\n"
-                        "plot %s %s\n", params->graph_diapasone, function_gnu_formula);
-
-    fprintf(graph_file, "set terminal eps\n"
-                        "set output \"./TexFiles/GnuGraph.eps\"\n"
-                        "plot %s %s\n", params->graph_diapasone, function_gnu_formula);
-
-    fclose(graph_file);
-
-    system("gnuplot ./TexFiles/GnuGraph.txt");
-
-    // system("convert ./TexFiles/GnuGraph.png ./TexFiles/GnuGraph.eps");
-
-    TEX_PRINT("\\includegraphics[scale=1]{GnuGraph.eps}\n\n");
+    CreateGraph(function_of_the_first_variable, params->graph_diapasone, tex_file);
 
     return 1;
 }
