@@ -8,18 +8,18 @@
 #include "./Interactors.h"
 #include "./TexTreeTranslateFunctions.h"
 
-int WriteExpressionInTexFile(const Node* node, FILE* tex_file)
+int WriteExpressionInTexFile(const Node* node, FILE* tex_file, enum TexPrintExpressionModes print_mode)
 {
     ASSERT(node     != nullptr);
     ASSERT(tex_file != nullptr);
 
     VERIFY_NODE(node);
 
-    fprintf(tex_file, "\\[");
+    TEX_PRINT("$%s", (print_mode == OUTPRINT_MODE ? "$" : ""));
 
     TranslateTreeToTex(node, tex_file);
 
-    fprintf(tex_file, "\\]\n");
+    TEX_PRINT("$%s", (print_mode == OUTPRINT_MODE ? "$" : ""));
 
     return 1;
 }
@@ -53,31 +53,31 @@ int TranslateNodeToTex(FILE* tex_file, const Node* node, const char* op_text, en
         }
     }
 
-    if (is_print_brackets) fprintf(tex_file, "(");
+    if (is_print_brackets) TEX_PRINT("(");
 
     if (mode == OP_TEX_PREPRINT_ONE_ARG)
     {
-        fprintf(tex_file, "%s", op_text);
+        TEX_PRINT("%s", op_text);
         TranslateTreeToTex(node->right, tex_file);
     }
 
     else if (mode == OP_TEX_INPRINT)
     {
         TranslateTreeToTex(node->left, tex_file);
-        fprintf(tex_file, "%s", op_text);
+        TEX_PRINT("%s", op_text);
         TranslateTreeToTex(node->right, tex_file);
     }
 
     else if (mode == OP_TEX_PREPRINT_TWO_ARGS)
     {
-        fprintf(tex_file, "%s", op_text);
+        TEX_PRINT("%s", op_text);
         TranslateTreeToTex(node->left, tex_file);
         TranslateTreeToTex(node->right, tex_file);
     }
 
     else return 0;
 
-    if (is_print_brackets) fprintf(tex_file, ")");
+    if (is_print_brackets) TEX_PRINT(")");
 
     return 1;
 }
@@ -99,12 +99,12 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
 
 //     if (TreeDepth(node) == MAX_UNREPLACEBLE_TREE_DEPTH)
 //     {
-//         fprintf(tex_file, "{");
+//         TEX_PRINT("{");
 //
-//         fprintf(tex_file, "(replacement)");
+//         TEX_PRINT("(replacement)");
 //         // NodeValPrint(node, tex_file);
 //
-//         fprintf(tex_file, "}");
+//         TEX_PRINT("}");
 //
 //         return 1;
 //     }
@@ -116,7 +116,7 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
         ASSERT(node->left  != nullptr);
         ASSERT(node->right != nullptr);
 
-        fprintf(tex_file, "{");
+        TEX_PRINT("{");
 
         switch(node->op_val)
         {
@@ -144,25 +144,25 @@ int TranslateTreeToTex(const Node* node, FILE* tex_file)
             default      : return 0;
         }
 
-        fprintf(tex_file, "}");
+        TEX_PRINT("}");
 
         return 1;
     }
 
-    fprintf(tex_file, "{");
+    TEX_PRINT("{");
 
     // if (IsPrintableNode(node)) NodeValPrint(node, tex_file);
 
     int is_negative_num = (node->val_type == NUM_TYPE &&
                            node->num_val < 0 && node->prev ? 1 : 0);
 
-    if (is_negative_num) fprintf(tex_file, "(");
+    if (is_negative_num) TEX_PRINT("(");
 
     NodeValPrint(node, tex_file);
 
-    if (is_negative_num) fprintf(tex_file, ")");
+    if (is_negative_num) TEX_PRINT(")");
 
-    fprintf(tex_file, "}");
+    TEX_PRINT("}");
 
     return 1;
 }

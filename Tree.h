@@ -46,6 +46,7 @@ int TreeVerify(const Tree* tree);
 int TreeCtor  (Tree* tree);
 int TreeDtor  (Tree* tree);
 size_t TreeDepth(const Node* node);
+size_t TreeNumberOfNodes(const Node* node);
 
 enum Operators IsOperator(const char* node_val);
 

@@ -21,6 +21,11 @@ static int factorial(int num)
     return num * factorial(num-1);
 }
 
+const char* PickRandomTransition()
+{
+    return transitions[rand() % NUM_OF_TRANSITION_PHRASES];
+}
+
 double CalculateTree(Node* node, const ExpressionParams* params)
 {
     ASSERT(node != nullptr)
@@ -255,12 +260,17 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 
     if (tex_mode == PRINT_STEPS_TEX_MODE)
     {
-        fprintf(tex_file, "%ld step:\n"
-                        "finding a derivation of function:\n", *n_step);
-        WriteExpressionInTexFile(node, tex_file);
+        TEX_PRINT("%ld step.\n"
+                        "finding a derivation of:\n\n", *n_step);
+        WriteExpressionInTexFile(node, tex_file, INPRINT_MODE);
+        TEX_PRINT("\n\n");
 
-        fprintf(tex_file, "here it is:\n");
-        WriteExpressionInTexFile(differed_node, tex_file);
+        TEX_PRINT("%s:\n", PickRandomTransition());
+        TEX_PRINT("\n\n${(");
+        TranslateTreeToTex(node, tex_file);
+        TEX_PRINT(")^\\prime}$ {=\\\\=}");
+        WriteExpressionInTexFile(differed_node, tex_file, INPRINT_MODE);
+        TEX_PRINT("\n\n");
     }
 
 //     ShowTree(node, SIMPLE_DUMP_MODE, 0);
@@ -288,7 +298,7 @@ Node* NDifferentiate(Node* node, size_t n_diff, FILE* tex_file, enum TexModes te
     for (size_t i = 0; i < n_diff; i++)
     {
         if (is_tex_print)
-            fprintf(tex_file, "Calculating the %ld derivation of the expression:\n\n", i+1);
+            TEX_PRINT("Calculating the %ld derivation of the expression:\n\n", i+1);
 
         differed_nodes[i+1] = Differentiate(differed_nodes[i], tex_file, tex_mode);
         // differed_nodes[i+1] = CopyNode(differed_nodes[i]);
@@ -297,7 +307,7 @@ Node* NDifferentiate(Node* node, size_t n_diff, FILE* tex_file, enum TexModes te
 
         // if (is_tex_print)
         // {
-        //     fprintf(tex_file, "Thus, the %ld derivation:\n", i+1);
+        //     TEX_PRINT("Thus, the %ld derivation:\n", i+1);
         //     WriteExpressionInTexFile(differed_nodes[i+1], tex_file);
         // }
     }

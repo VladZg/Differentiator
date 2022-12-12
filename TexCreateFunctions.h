@@ -29,6 +29,7 @@ int FindNDerivationTex               (      Node*  expression, const ExpressionP
 int FindFullDerivationTex            (const Node*  expression, const ExpressionParams* params, FILE* tex_file);
 int ExploreFunctionOfManyVariablesTex(const Node*  expression, const ExpressionParams* params, FILE* tex_file);
 
+int PrintExpressionAsFunction                   (const ExpressionParams* params, FILE* tex_file);
 Node* TranslateExpresiionToFunctionOfTheFirstVar(const Node* expression, const ExpressionParams* params);
 int TranslateTreeToGnuplotFormula               (const Node* node, char* formula);
 
@@ -40,6 +41,7 @@ int ExploreFunctionOfTheFirstVariableTex(Node** function_of_the_first_variable, 
 int FillTexFile       (FILE* tex_file, ExpressionParams* params);
 int WriteTailOfTexFile(FILE* tex_file);
 
+int ChangeTexPapersize(FILE* tex_file);
 int CompileTexFile(const char* filename);
 int CreateTexFile (const char* filename, ExpressionParams* params);
 

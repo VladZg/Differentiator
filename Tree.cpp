@@ -320,6 +320,13 @@ size_t TreeDepth(const Node* node)
     return 1 + (left_depth > right_depth ? left_depth : right_depth); //max(left_depth, right_depth);
 }
 
+size_t TreeNumberOfNodes(const Node* node)
+{
+    if (!node) return 0;
+
+    return 1 + TreeNumberOfNodes(node->left) + TreeNumberOfNodes(node->right);
+}
+
 
 enum Operators IsOperator(const char* node_val)
 {

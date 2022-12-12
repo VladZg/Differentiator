@@ -210,20 +210,39 @@ void PrintParametersPoint(FILE* stream, const ExpressionParams* params)
 {
     if (params->n_vars == NUM_OF_CONSTANTS) return;
 
-    fprintf(stream, "IN THE POINT (");
+    fprintf(stream, "In the point $M_0$(");
 
     for (size_t var_i = NUM_OF_CONSTANTS; var_i < params->n_vars - 1; var_i++)
-        fprintf(stream, "%s = %." NUMS_PRINT_ACCURACY "lf, ", params->vars[var_i].name, params->vars[var_i].value);
+        fprintf(stream, "$%s_0$, ", params->vars[var_i].name);
 
-    fprintf(stream, "%s = %." NUMS_PRINT_ACCURACY "lf", params->vars[params->n_vars-1].name, params->vars[params->n_vars-1].value);
+    fprintf(stream, "$%s_0$) = (", params->vars[params->n_vars-1].name);
 
-    fprintf(stream, ")");
+    for (size_t var_i = NUM_OF_CONSTANTS; var_i < params->n_vars - 1; var_i++)
+        fprintf(stream, "%." NUMS_PRINT_ACCURACY "lf, ", params->vars[var_i].value);
+
+    fprintf(stream, "%." NUMS_PRINT_ACCURACY "lf)", params->vars[params->n_vars-1].value);
 }
 
 int PrintAllVarNames(FILE* stream, const ExpressionParams* params)
 {
     for (int var_i = NUM_OF_CONSTANTS; var_i < (int) params->n_vars; var_i++)
         fprintf(stream, "%s, ", params->vars[var_i].name);
+
+    return 1;
+}
+
+int PrintTextInTex(FILE* tex_file, const char* fmt_text, ...)
+{
+    va_list args;
+    va_start(args, fmt_text);
+
+    // fprintf(tex_file, "%s", (print_mode == USUAL_PRINT_MODE ? "" : "\\["));
+
+    vfprintf(tex_file, fmt_text, args);
+
+    // fprintf(tex_file, "%s", (print_mode == USUAL_PRINT_MODE ? "" : "\\]"));
+
+    va_end(args);
 
     return 1;
 }

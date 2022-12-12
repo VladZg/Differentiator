@@ -1,11 +1,12 @@
-sin(x)/x
+sin(x)*y^2
 
 x = 3
+y = 2
 
-n_differentiate   = 2
-Makloren_accuracy = 3
-tangent_point     = 1
-graph_diapasone   = [-10:100]
+n_differentiate   = 0
+Makloren_accuracy = 4
+tangent_point     = 0
+graph_diapasone   = [-0.05:0.05]
 
 done: производная + значение
 done: производная n-го порядка + значение в точке

@@ -9,7 +9,8 @@ enum Constants
     MAX_NODE_VAL_LEN = 10,
     WRONG_CALCULATED_NODE = 1423,
     MAX_UNREPLACEBLE_TREE_DEPTH = 10,
-    MAX_EXPRESSION_LEN = 100
+    MAX_EXPRESSION_LEN = 100,
+    NUM_OF_TRANSITION_PHRASES = 15,
 };
 
 enum VarsConsts
@@ -85,6 +86,27 @@ enum NodeVerifyCodes
 
 };
 
+enum TexFileConsts
+{
+    TEX_PAGE_WIDTH  = 25,
+    TEX_PAGE_HEIGHT = 37,
+};
+
+const float ONE_NODE_TEX_PAGE_WIDTH = 0.5;
+
+enum TexPrintExpressionModes
+{
+    INPRINT_MODE,
+    OUTPRINT_MODE,
+};
+
+enum TexPrintModes
+{
+    CENTRED_PRINT_MODE,
+    USUAL_PRINT_MODE  ,
+};
+
+
 #define NUMS_PRINT_ACCURACY "3"
 
 // #define TEXT_FOR_PRONOUNCING_FILENAME  "./TextForPronouncing.txt"
@@ -94,5 +116,23 @@ enum NodeVerifyCodes
 // #define DATABASE_DUMP_PICTURE_FOLDER   "./DumpInfo/"
 
 // const char Tree_replacements[] = {'A', 'B', 'C', 'D'}
+
+const char transitions[NUM_OF_TRANSITION_PHRASES][100] = {
+                                    "It's simple as fuck",
+                                    "It's really easy to find"   ,
+                                    "Even my two-aged sister knows that it equals",
+                                    "If someone asked me that in the middle of the night, I wouldn't hesitate to say",
+                                    "Man... Just look",
+                                    "I spend the hole of my life to find the answer and finally it's",
+                                    "thanks to the results of my colleagues' scientific work, I know that it equals",
+                                    "When I was child, my father always told me: \"Remember, son",
+                                    "For centuries, people have hunted for the secret knowledge that",
+                                    "What if it equals",
+                                    "Sounds logical that it is the same as",
+                                    "I was asked not to tell anyone that",
+                                    "My roommate mumbled it in his sleep all night",
+                                    "While preparing for exams, I learned a lot of new things, for example",
+                                    "A true prince must know that it equals"
+                                 };
 
 #endif
