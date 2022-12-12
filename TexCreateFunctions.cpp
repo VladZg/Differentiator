@@ -27,11 +27,13 @@ int WriteHeadOfTexFile(FILE* tex_file)
 
     TEX_PRINT("\\documentclass{article}\n"
               "\\usepackage[left=15mm, top=20mm, right=15mm, bottom=20mm, papersize={%dcm,%dcm}]{geometry}\n"
-              "\\usepackage{mathtools}"
-              "\\usepackage[dvips]{graphicx}"
-            //   "\\graphicspath{{./}}"
+              "\\usepackage{mathtools}\n"
+              "\\usepackage{graphicx} \n"
+              "\\usepackage{cmap}     \n"
+              "\\usepackage{epstopdf} \n"
+            //   "\\graphicspath{TexFiles/}\n"
               "\n"
-              "\\begin{document}\n",
+              "\\begin{document}      \n",
               Tex_page_width, TEX_PAGE_HEIGHT);
 
     return 1;
@@ -486,9 +488,9 @@ int GraphOfFunction(Node* function_of_the_first_variable, ExpressionParams* para
 
     system("gnuplot ./TexFiles/GnuGraph.txt");
 
-    // system("convert ./TexFiles/GnuGraph.png ./TexFiles/GnuGraph.esp");
+    // system("convert ./TexFiles/GnuGraph.png ./TexFiles/GnuGraph.eps");
 
-    TEX_PRINT("\\includegraphics[width=0.8\\linewidth]{./GnuGraph.eps}\n\n");
+    TEX_PRINT("\\includegraphics[scale=1]{GnuGraph.eps}\n\n");
 
     return 1;
 }

@@ -3,10 +3,10 @@ sin(x)*y^2
 x = 3
 y = 2
 
-n_differentiate   = 0
-Makloren_accuracy = 5
+n_differentiate   = 3
+Makloren_accuracy = 4
 tangent_point     = 0
-graph_diapasone   = [-10:10]
+graph_diapasone   = [2:12]
 
 done: производная + значение
 done: производная n-го порядка + значение в точке
