@@ -268,7 +268,7 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
         TEX_PRINT("%s:\n", PickRandomTransition());
         TEX_PRINT("\n\n${(");
         TranslateTreeToTex(node, tex_file);
-        TEX_PRINT(")^\\prime}$ {=\\\\=}");
+        TEX_PRINT(")^\\prime}$ {= ... = [top secret] = ... = \\\\ = }");
         WriteExpressionInTexFile(differed_node, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
     }

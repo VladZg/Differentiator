@@ -41,7 +41,8 @@ int ShitSomeCringeIntroductionInTexFile(FILE* tex_file)
 {
     ASSERT(tex_file != nullptr)
 
-    TEX_PRINT("\\[CrInGeCrInGe Production. Super cringe introduction here:\\]\n\n\n");
+    TEX_PRINT("\\section{Introduction}\n"
+              "\\[CrInGeCrInGe Production. Super cringe introduction here:\\]\n");
 
     return 1;
 }
@@ -86,7 +87,7 @@ int FindFirstDerivationTex(Node* expression, const ExpressionParams* params, FIL
 
     Node* diff1 = Differentiate(expression, tex_file, PRINT_STEPS_TEX_MODE);
 
-    TEX_PRINT("Congratulations! The first derivation of the expression is:\n\n");
+    TEX_PRINT("Congratulations! \\textbf{The first derivation of the expression} is:\n\n");
     WriteExpressionInTexFile(diff1, tex_file, INPRINT_MODE);
 
     double diff1_value = CalculateTree(diff1, params);
@@ -126,11 +127,13 @@ int CalculateExpressionTex(Node* expression, const ExpressionParams* params, FIL
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
+    TEX_PRINT("\\paragraph{Calculation value of function in the point}\n");
+
     if (!expression) return 1;
 
     TEX_PRINT("BRITISH SCIENTISTS WERE SHOCKED, WHEN THEY COUNT IT!!!\n\n");
     PrintParametersPoint(tex_file, params);
-    TEX_PRINT(" it's value = %." NUMS_PRINT_ACCURACY "lf\n\n", CalculateTree(expression, params));
+    TEX_PRINT(" \\textbf{it's value} = %." NUMS_PRINT_ACCURACY "lf\n\n", CalculateTree(expression, params));
 
     return 1;
 }
@@ -140,13 +143,15 @@ int FindNDerivationTex(Node* expression, const ExpressionParams* params, FILE* t
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
+    TEX_PRINT("\\paragraph{Finding the %ld derivation:}\n\n", params->n_differentiate);
+
     if (!expression) return 1;
 
     TEX_PRINT("Let's calculate the %ld derivation of the expression:\n\n", params->n_differentiate);
 
     Node* n_diff = NDifferentiate(expression, params->n_differentiate, tex_file, PRINT_STEPS_TEX_MODE);
 
-    TEX_PRINT("Finally... The %ld derivation of the expression:\n\n", params->n_differentiate);
+    TEX_PRINT("\\textbf{Finally... The %ld derivation of the expression:}\n\n", params->n_differentiate);
     WriteExpressionInTexFile(n_diff, tex_file, INPRINT_MODE);
     TEX_PRINT("\n\n");
 
@@ -167,6 +172,8 @@ int FindFullDerivationTex(const Node* expression, const ExpressionParams* params
 {
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
+
+    TEX_PRINT("\\paragraph{Finding partical derivations:}\n\n");
 
     if (!expression) return 1;
 
@@ -202,6 +209,8 @@ int FindFullDerivationTex(const Node* expression, const ExpressionParams* params
 
         full_derivation = SimplifyTree(&full_derivation);
 
+        TEX_PRINT("\\paragraph{Finding full derivation:}\n\n");
+
         TEX_PRINT("Full derivation:\n\n");
         WriteExpressionInTexFile(full_derivation, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
@@ -227,6 +236,8 @@ int ExploreFunctionOfManyVariablesTex(const Node* expression, const ExpressionPa
 {
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
+
+    TEX_PRINT("\\section{Exploration the expression as a function of multiple variables}\n");
 
     if (!expression) return 1;
 
@@ -280,7 +291,7 @@ int DecomposeOnMaklorensFormulaTex(Node* function_of_the_first_variable, Express
         remaining_member_of_decomposing = SimplifyTree(&remaining_member_of_decomposing);
 
         // ShowTree(Maklorens_formula, FULL_FULL_DUMP_MODE, 1);
-        TEX_PRINT("Maklorens formula for $%s \\to %s_0 = %." NUMS_PRINT_ACCURACY "lf$:\n\n"
+        TEX_PRINT("\\textbf{Maklorens formula for $%s \\to %s_0 = %." NUMS_PRINT_ACCURACY "lf$}:\n\n"
                   "f(%s) = ",
                   params->vars[NUM_OF_CONSTANTS].name,  params->vars[NUM_OF_CONSTANTS].name,
                   params->vars[NUM_OF_CONSTANTS].value, params->vars[NUM_OF_CONSTANTS].name);
@@ -290,7 +301,7 @@ int DecomposeOnMaklorensFormulaTex(Node* function_of_the_first_variable, Express
         WriteExpressionInTexFile(remaining_member_of_decomposing, tex_file, INPRINT_MODE);
         TEX_PRINT(")\n\n");
 
-        int Maklorens_formula_tree_depth = TreeNumberOfNodes(Maklorens_formula);
+        int Maklorens_formula_tree_depth = TreeNumberOfNodes(Maklorens_formula) + 5;
         if (Maklorens_formula_tree_depth * ONE_NODE_TEX_PAGE_WIDTH > Tex_page_width) Tex_page_width = Maklorens_formula_tree_depth * ONE_NODE_TEX_PAGE_WIDTH;
 
         NodeDtor(&Maklorens_formula);
@@ -331,7 +342,7 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
                                      CREATE_NUM(function_of_the_first_var_value_in_point));
         tangent_equation = SimplifyTree(&tangent_equation);
 
-        TEX_PRINT("Tangent equation in the point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf: ", params->vars[NUM_OF_CONSTANTS].name, params->tangent_point);
+        TEX_PRINT("\\textbf{Tangent equation} in the point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf:\n\n", params->vars[NUM_OF_CONSTANTS].name, params->tangent_point);
         TEX_PRINT("f(%s) = ", params->vars[NUM_OF_CONSTANTS].name);
         WriteExpressionInTexFile(tangent_equation, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
@@ -345,8 +356,10 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
 
             Node* normal_equation = ADD(MUL(CREATE_NUM(normal_coefficient), SUB(CREATE_VAR(var_name), CREATE_NUM(params->tangent_point))),
                                         CREATE_NUM(function_of_the_first_var_value_in_point));
+            normal_equation = SimplifyTree(&normal_equation);
 
-            TEX_PRINT("Normal equation in the point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf: \n", params->vars[NUM_OF_CONSTANTS].name, params->tangent_point);
+
+            TEX_PRINT("\\textbf{Normal equation} in the point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf: \n\n", params->vars[NUM_OF_CONSTANTS].name, params->tangent_point);
             TEX_PRINT("f(%s) = ", params->vars[NUM_OF_CONSTANTS].name);
             WriteExpressionInTexFile(normal_equation, tex_file, INPRINT_MODE);
             TEX_PRINT("\n");
@@ -354,7 +367,7 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
             NodeDtor(&normal_equation);
         }
 
-        else TEX_PRINT("Normal equation in point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf: %s = %." NUMS_PRINT_ACCURACY "lf\n",
+        else TEX_PRINT("\\textbf{Normal equation} in the point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf: %s = %." NUMS_PRINT_ACCURACY "lf\n\n",
                        params->vars[NUM_OF_CONSTANTS].name, params->tangent_point, params->vars[NUM_OF_CONSTANTS].name, function_of_the_first_var_value_in_point);
 
         params->vars[NUM_OF_CONSTANTS].value = old_var_val;
@@ -365,8 +378,8 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
         return 1;
     }
 
-    TEX_PRINT("Tangent equation for each point is f = 0\n"
-                      "Normal equation can't be writen\n");
+    TEX_PRINT("\\textbf{Tangent equation} for each point is f = 0\n"
+              "Normal equation can't be writen\n");
 
     return 0;
 }
@@ -452,7 +465,9 @@ int GraphOfFunction(Node* function_of_the_first_variable, ExpressionParams* para
 
     if (!function_of_the_first_variable) return 0;
 
-    TEX_PRINT("Graph f(%s):\n\n", params->vars[NUM_OF_CONSTANTS].name);
+    TEX_PRINT("\\textbf{Graph} f(%s) = ", params->vars[NUM_OF_CONSTANTS].name);
+    WriteExpressionInTexFile(function_of_the_first_variable, tex_file, INPRINT_MODE);
+    TEX_PRINT(" on the diapasone $%s \\in %s$ :\n\n", params->vars[NUM_OF_CONSTANTS].name, params->graph_diapasone);
 
     char function_gnu_formula[300] = {};
     TranslateTreeToGnuplotFormula(function_of_the_first_variable, function_gnu_formula);
@@ -482,6 +497,8 @@ int ExploreFunctionOfTheFirstVariableTex(Node** function_of_the_first_variable, 
 {
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
+
+    TEX_PRINT("\\section{Exploration the function of the first variable}\n");
 
     if (!(*function_of_the_first_variable)) return 1;
 
