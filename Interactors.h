@@ -15,6 +15,9 @@ int   ReadExpressionParams(FILE* expression_file, ExpressionParams* params);
 void PrintParametersPoint(FILE* stream, const ExpressionParams* params);
 int  AddConstants(ExpressionParams* params);
 
+void PrintParametersPoint(FILE* stream, const ExpressionParams* params);
+int  PrintAllVarNames    (FILE* stream, const ExpressionParams* params);
+
 int WriteTree(FILE* stream, Tree* tree, const char* database_name);
 int WriteNode(FILE* stream, Node* node);
 

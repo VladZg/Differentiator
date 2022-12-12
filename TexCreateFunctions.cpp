@@ -328,7 +328,22 @@ int TranslateTreeToGnuplotFormula(const Node* node, char* formula)
 
     strcat(formula, "(");
 
-    if (node->left)
+    if (node->left &&
+        !(node->op_val == OP_EXP    ||
+          node->op_val == OP_SQRT   ||
+          node->op_val == OP_LOG    ||
+          node->op_val == OP_LN     ||
+          node->op_val == OP_SIN    ||
+          node->op_val == OP_COS    ||
+          node->op_val == OP_TG     ||
+          node->op_val == OP_CTG    ||
+          node->op_val == OP_SH     ||
+          node->op_val == OP_CH     ||
+          node->op_val == OP_ARCSIN ||
+          node->op_val == OP_ARCCOS ||
+          node->op_val == OP_ARCTG  ||
+          node->op_val == OP_ARCCTG   ))
+
         TranslateTreeToGnuplotFormula(node->left, formula);
 
     if      (node->val_type == VAR_TYPE)
@@ -388,20 +403,20 @@ int GraphOfFunction(Node* function_of_the_first_variable, ExpressionParams* para
 
     fprintf(tex_file, "Graph f(%s):\n\n", params->vars[NUM_OF_CONSTANTS].name);
 
-    char cmd[320] = "plot ";
-    char function_formula[300] = {};
+    char function_gnu_formula[300] = {};
+    TranslateTreeToGnuplotFormula(function_of_the_first_variable, function_gnu_formula);
 
-    TranslateTreeToGnuplotFormula(function_of_the_first_variable, function_formula);
+    FILE* graph_file = fopen("./TexFiles/GnuGraph.txt", "w");
 
-    strcat(cmd, function_formula);
-
-    FILE* graph_file = fopen("Graphics.txt", "w");
-
-    fprintf(graph_file, "%s\n", cmd);
+    fprintf(graph_file, "set terminal png\n"
+                        "set output \"./TexFiles/GnuGraph.png\"\n"
+                        "plot %s %s", params->graph_diapasone, function_gnu_formula);
 
     fclose(graph_file);
 
-    system("gnuplot Graphics.txt");
+    system("./TexFiles/GnuGraph.txt");
+
+    fprintf(tex_file, "\\includegraphics[width=0.8\\linewidth]{./GnuGraph.png}\n\n");
 
     return 1;
 }
@@ -444,6 +459,16 @@ int FillTexFile(FILE* tex_file, ExpressionParams* params)
 
     //Печать начального выражения
     fprintf(tex_file, "Let's calculate smth with expression given:\n");
+
+    fprintf(tex_file, "f");
+    if (params->n_vars - NUM_OF_CONSTANTS > 0)
+    {
+        fprintf(tex_file, "(");
+        PrintAllVarNames(tex_file, params);
+        fseek(tex_file, -2, SEEK_CUR);
+        fprintf(tex_file, ") = ");
+    }
+
     WriteExpressionInTexFile(*(params->expression), tex_file);
 
     //Упрощение выражения

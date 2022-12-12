@@ -23,6 +23,7 @@ struct ExpressionParams
     size_t n_differentiate;
     size_t Makloren_accuracy;
     double tangent_point;
+    char*  graph_diapasone;
 };
 
 int  ExpressionParamsDtor(ExpressionParams* params);

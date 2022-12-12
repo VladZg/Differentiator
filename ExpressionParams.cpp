@@ -25,7 +25,8 @@ void ExpressionParamsDump(FILE* stream, ExpressionParams* params)
     fprintf(stream, "! \n"
                     "!-Number of differentiates: %ld\n"
                     "!-Macloren's accuracy:      %ld\n"
-                    "!-Tanget point:             %lf\n\n", params->n_differentiate, params->Makloren_accuracy, params->tangent_point);
+                    "!-Tanget point:             %lf\n"
+                    "!-Graph diapasone:          %s\n\n", params->n_differentiate, params->Makloren_accuracy, params->tangent_point, params->graph_diapasone);
 }
 
 int ExpressionParamsDtor(ExpressionParams* params)
@@ -46,6 +47,8 @@ int ExpressionParamsDtor(ExpressionParams* params)
 
     free(params->vars);
     params->vars = nullptr;
+
+    free((void*) params->graph_diapasone);
 
     params = nullptr;
 

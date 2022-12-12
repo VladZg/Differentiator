@@ -145,7 +145,7 @@ int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
 
     *(params->expression) = GetG(str, &expression_str, params);
 
-    ShowTree(*(params->expression), SIMPLE_DUMP_MODE, 1);
+    // ShowTree(*(params->expression), SIMPLE_DUMP_MODE, 1);
 
     fgetc(expression_file);
     fgetc(expression_file); // пропуск строки
@@ -173,9 +173,12 @@ int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
 
     if (params->n_vars != NUM_OF_CONSTANTS) fgetc(expression_file); // пропуск строки
 
+    params->graph_diapasone = (char*) calloc(15, sizeof(char));
+
     fscanf(expression_file, " n_differentiate   = %ld ", &(params->n_differentiate));
     fscanf(expression_file, " Makloren_accuracy = %ld ", &(params->Makloren_accuracy));
     fscanf(expression_file, " tangent_point     = %lf ", &(params->tangent_point));
+    fscanf(expression_file, " graph_diapasone   = %s  ", params->graph_diapasone);
 
     // InsertConstsInExpression(*(params->expression), params);
 
@@ -215,6 +218,14 @@ void PrintParametersPoint(FILE* stream, const ExpressionParams* params)
     fprintf(stream, "%s = %." NUMS_PRINT_ACCURACY "lf", params->vars[params->n_vars-1].name, params->vars[params->n_vars-1].value);
 
     fprintf(stream, ")");
+}
+
+int PrintAllVarNames(FILE* stream, const ExpressionParams* params)
+{
+    for (int var_i = NUM_OF_CONSTANTS; var_i < (int) params->n_vars; var_i++)
+        fprintf(stream, "%s, ", params->vars[var_i].name);
+
+    return 1;
 }
 
 int WriteNode(FILE* stream, Node* node)
