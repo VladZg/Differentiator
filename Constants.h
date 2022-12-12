@@ -9,6 +9,7 @@ enum Constants
     MAX_NODE_VAL_LEN = 10,
     WRONG_CALCULATED_NODE = 1423,
     MAX_UNREPLACEBLE_TREE_DEPTH = 10,
+    MAX_EXPRESSION_LEN = 100
 };
 
 enum VarsConsts
@@ -83,6 +84,8 @@ enum NodeVerifyCodes
     PARENT_CONNECTION_IS_WRONG_CODE,
 
 };
+
+#define NUMS_PRINT_ACCURACY "3"
 
 // #define TEXT_FOR_PRONOUNCING_FILENAME  "./TextForPronouncing.txt"
 // #define DATABASE_DUMP_HTML_FILENAME    "./DumpInfo/DatabaseDump.html"

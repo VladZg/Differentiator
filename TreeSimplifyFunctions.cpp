@@ -23,13 +23,6 @@ double CalculateOperatorNode(enum Operators op_val, double left_num_val, double 
         case OP_DIV:
             return  left_num_val / right_num_val;
 
-            // if (node->num_val == nan(""))
-            // {
-            //     fprintf(stderr, "Деление на нуль!\n");
-            //     abort();
-            //     return nullptr;
-            // }
-
         case OP_SQRT:
             return sqrt(right_num_val);
 
@@ -109,10 +102,6 @@ Node* CalculateConstantSubtrees(Node** node)
                 (*node)->val_type = NUM_TYPE;
                 (*node)->op_val   = NULL_OP;
 
-                // free((*node)->left);
-                // free((*node)->right);
-                // (*node)->left = nullptr;
-                // (*node)->right = nullptr;
                 NodeDtor(&((*node)->left));
                 NodeDtor(&((*node)->right));
             }
@@ -178,11 +167,6 @@ Node* DestroyNeutralTreeElements(Node** node)
 
     if ((*node)->val_type == OP_TYPE)
     {
-        // Node* temp_node = (Node*) calloc(1, sizeof(Node));
-
-        // Node* left  = nullptr;
-        // Node* right = nullptr;
-
         if ((*node)->left)  (*node)->left  = DestroyNeutralTreeElements(&((*node)->left));
         if ((*node)->right) (*node)->right = DestroyNeutralTreeElements(&((*node)->right));
 
@@ -192,111 +176,42 @@ Node* DestroyNeutralTreeElements(Node** node)
         if (IS_OP(OP_ADD))
         {
             if (IS_NUM((*node)->left) && IS_ZERO((*node)->left))
-            {
-//                 Node* new_node = CR_PTR;
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//                 return *node;
 
                 return ReplaceNode(node, CR_PTR);
-            }
 
             if (IS_NUM((*node)->right) && IS_ZERO((*node)->right))
-            {
-//                 Node* new_node = CL_PTR;
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CL_PTR);
-            }
         }
 
         if (IS_OP(OP_SUB))
         {
             if (IS_NUM((*node)->right) && IS_ZERO((*node)->right))
-            {
-//                 Node* new_node = CL_PTR;
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CL_PTR);
-            }
 
             if (IS_NUM((*node)->left) && IS_ZERO((*node)->left))
-            {
-//                 Node* new_node = MUL(CREATE_NUM(-1), CR_PTR);
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, MUL(CREATE_NUM(-1), CR_PTR));
-            }
         }
 
         if (IS_OP(OP_MUL))
         {
             if ((IS_NUM((*node)->left)  && IS_ZERO((*node)->left )) ||
                 (IS_NUM((*node)->right) && IS_ZERO((*node)->right))   )
-            {
-//                 Node* new_node = CREATE_NUM(0);
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CREATE_NUM(0));
-            }
 
             if (IS_NUM((*node)->left) && IS_ONE((*node)->left))
-            {
-//                 Node* new_node = CR_PTR;
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CR_PTR);
-            }
 
             if (IS_NUM((*node)->right) && IS_ONE((*node)->right))
-            {
-//                 Node* new_node = CL_PTR;
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CL_PTR);
-            }
 
             if (IS_NUM((*node)->right) && !IS_NUM((*node)->left))
             {
-//                 Node* temp_node = (*node)->left;
-//
-//                 (*node)->left  = (*node)->right;
-//                 (*node)->right = temp_node;
-//
-//                 return *node;
-
                 SwapNodes(&((*node)->left), &((*node)->right));
 
                 return *node;
@@ -333,30 +248,12 @@ Node* DestroyNeutralTreeElements(Node** node)
         if (IS_OP(OP_DIV))
         {
             if (IS_NUM((*node)->left) && IS_ZERO((*node)->left))
-            {
-//                 Node* new_node = CREATE_NUM(0);
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CREATE_NUM(0));
-            }
 
             if (IS_NUM((*node)->right) && IS_ONE((*node)->right))
-            {
-//                 Node* new_node = CL_PTR;
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CL_PTR);
-            }
 
 //             if (IS_NUM(node->left) && IS_ONE(node->left) &&
 //                 (node->prev != nullptr && node->prev->val_type == OP_TYPE && node->prev->op_val == OP_MUL))
@@ -380,61 +277,25 @@ Node* DestroyNeutralTreeElements(Node** node)
             if (IS_NUM((*node)->right))
             {
                 if (IS_ZERO((*node)->right))
-                {
-//                     Node* new_node = CREATE_NUM(1);
-//                     new_node->prev = (*node)->prev;
-//
-//                     NodeDtor(node);
-//                     *node = new_node;
-//
-//                     return *node;
 
                     return ReplaceNode(node, CREATE_NUM(1));
-                }
 
                 if (IS_ONE((*node)->right))
-                {
-//                     Node* new_node = CL_PTR;
-//                     new_node->prev = (*node)->prev;
-//
-//                     NodeDtor(node);
-//                     *node = new_node;
-//
-//                     return *node;
 
                     return ReplaceNode(node, CL_PTR);
-                }
             }
 
             else if (IS_NUM((*node)->left) && IS_ONE((*node)->left))
-            {
-//                 Node* new_node = CREATE_NUM(1);
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CREATE_NUM(1));
-            }
         }
 
         if (IS_OP(OP_EXP))
         {
             if (IS_NUM((*node)->right) &&
                 IS_ZERO((*node)->right))
-            {
-//                 Node* new_node = CREATE_NUM(1);
-//                 new_node->prev = (*node)->prev;
-//
-//                 NodeDtor(node);
-//                 *node = new_node;
-//
-//                 return *node;
 
                 return ReplaceNode(node, CREATE_NUM(1));
-            }
         }
     }
 
@@ -471,4 +332,36 @@ Node* SimplifyTree(Node** node)
     abort();
 
     return nullptr;
+}
+
+Node* ReplaceVarsWithNumsExceptOne(Node* node, const ExpressionVar* vars, int inreplaceble_var_index, size_t n_vars)
+{
+    ASSERT(vars != nullptr)
+
+    VERIFY_NODE(node);
+
+    if (!node) return nullptr;
+
+    if (node->left )
+        ReplaceVarsWithNumsExceptOne(node->left,  vars, inreplaceble_var_index, n_vars);
+
+    if (node->right)
+        ReplaceVarsWithNumsExceptOne(node->right, vars, inreplaceble_var_index, n_vars);
+
+    if (node->val_type == VAR_TYPE)
+    {
+        int var_index = FindVarIndex(node->var_val, vars, n_vars);
+
+        if (var_index != inreplaceble_var_index)
+        {
+            // free((void*) node->var_val);
+
+            node->val_type = NUM_TYPE;
+            node->num_val  = vars[var_index].value;
+        }
+    }
+
+    VERIFY_NODE(node);
+
+    return node;
 }

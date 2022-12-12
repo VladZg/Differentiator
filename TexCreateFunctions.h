@@ -12,17 +12,35 @@
 #include "./Stack/Stack.h"
 #include "./Tree.h"
 #include "./TreeDump.h"
+#include "./ExpressionReader.h"
 #include "./Interactors.h"
 #include "./TexTreeTranslateFunctions.h"
 #include "./TreeSimplifyFunctions.h"
 #include "./MathFunctions.h"
 #include "./DiffDSL.h"
 
-int WriteHeadOfTexFile(FILE* tex_file);
+int WriteHeadOfTexFile                 (FILE* tex_file);
 int ShitSomeCringeIntroductionInTexFile(FILE* tex_file);
+
+int FindFirstDerivationTex           (      Node*  expression, const ExpressionParams* params, FILE* tex_file);
+int SimplifyExpressionTex            (      Node** expression, const ExpressionParams* params, FILE* tex_file);
+int CalculateExpressionTex           (      Node*  expression, const ExpressionParams* params, FILE* tex_file);
+int FindNDerivationTex               (      Node*  expression, const ExpressionParams* params, FILE* tex_file);
+int FindFullDerivationTex            (const Node*  expression, const ExpressionParams* params, FILE* tex_file);
+int ExploreFunctionOfManyVariablesTex(const Node*  expression, const ExpressionParams* params, FILE* tex_file);
+
+Node* TranslateExpresiionToFunctionOfTheFirstVar(const Node* expression, const ExpressionParams* params);
+int TranslateTreeToGnuplotFormula               (const Node* node, char* formula);
+
+int DecomposeOnMaklorensFormulaTex      (Node*  function_of_the_first_variable, const ExpressionParams* params, FILE* tex_file);
+int EquationsInThePointTex              (Node*  function_of_the_first_variable,       ExpressionParams* params, FILE* tex_file);
+int GraphOfFunction                     (Node*  function_of_the_first_variable, const ExpressionParams* params, FILE* tex_file);
+int ExploreFunctionOfTheFirstVariableTex(Node** function_of_the_first_variable,       ExpressionParams* params, FILE* tex_file);
+
+int FillTexFile       (FILE* tex_file, ExpressionParams* params);
 int WriteTailOfTexFile(FILE* tex_file);
-int FillTexFile       (FILE* tex_file,   ExpressionParams* params);
-int CreateTexFile (const char* filename, ExpressionParams* params);
+
 int CompileTexFile(const char* filename);
+int CreateTexFile (const char* filename, ExpressionParams* params);
 
 #endif

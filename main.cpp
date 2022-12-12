@@ -10,6 +10,7 @@
 #include "./CheckFile.h"
 #include "./Tree.h"
 #include "./TreeDump.h"
+#include "./ExpressionReader.h"
 #include "./Interactors.h"
 #include "./TexTreeTranslateFunctions.h"
 #include "./TreeSimplifyFunctions.h"
@@ -30,7 +31,7 @@ int main() //const int argc, const char** argv
 
     fclose(expression_file);
 
-    CreateTexFile("TexExpression.tex", &params);
+    CreateTexFile("TexExpression", &params);
 
     ExpressionParamsDtor(&params);
 

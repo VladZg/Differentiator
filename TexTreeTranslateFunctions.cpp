@@ -36,15 +36,20 @@ int TranslateNodeToTex(FILE* tex_file, const Node* node, const char* op_text, en
     {
         if (node->prev->val_type == OP_TYPE)
         {
-            enum Operators op_val = node->prev->op_val;
+            enum Operators prev_op_val = node->prev->op_val;
 
-            if (op_val         == OP_DIV  ||
-                op_val         == OP_SQRT ||
-               (node->val_type == OP_TYPE &&
-                node->op_val   == OP_DEG  &&
-                op_val         != OP_DEG    ))
+            if ( prev_op_val    == OP_DIV         ||
+                 prev_op_val    == OP_SQRT        ||
+               ( node->op_val   == OP_DEG  &&
+                 prev_op_val    != OP_DEG    )    ||
+               ((node->op_val   == OP_ADD  ||
+                 node->op_val   == OP_SUB    ) &&
+                (prev_op_val    == OP_ADD)   )    ||
+                 prev_op_val    == OP_EXP)
 
                 is_print_brackets = 0;
+
+            if (prev_op_val == OP_DEG) is_print_brackets = 1;
         }
     }
 

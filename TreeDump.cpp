@@ -71,24 +71,14 @@ int TreeCreateFullDotEdges(const Node* node, FILE* dot_file, enum TreeDumpModes 
 
     if (node->left)
     {
-//         if (dump_mode == SIMPLE_DUMP_MODE)
-            fprintf(dot_file, "    node%ld -> node%ld;\n", node->index, node->left->index);
-//
-//         else if (dump_mode == FULL_FULL_DUMP_MODE)
-            // fprintf(dot_file, "    node%ld: <left> -> node%ld;\n", node->index, node->left->index);
-
+        fprintf(dot_file, "    node%ld -> node%ld;\n", node->index, node->left->index);
         TreeCreateFullDotEdges(node->left, dot_file, dump_mode);
     }
 
     if (node->right)
     {
         TreeCreateFullDotEdges(node->right, dot_file, dump_mode);
-
-//         if (dump_mode == SIMPLE_DUMP_MODE)
-            fprintf(dot_file, "    node%ld -> node%ld;\n", node->index, node->right->index);
-//
-//         else if (dump_mode == FULL_FULL_DUMP_MODE)
-            // fprintf(dot_file, "    node%ld: <right> -> node%ld;\n", node->index, node->right->index);
+        fprintf(dot_file, "    node%ld -> node%ld;\n", node->index, node->right->index);
     }
 
     return 1;

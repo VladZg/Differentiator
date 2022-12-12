@@ -13,6 +13,14 @@
 #include "./MathFunctions.h"
 #include "./TreeSimplifyFunctions.h"
 
+static int factorial(int num)
+{
+    if (num == 0)
+        return 1;
+
+    return num * factorial(num-1);
+}
+
 double CalculateTree(Node* node, const ExpressionParams* params)
 {
     ASSERT(node != nullptr)
@@ -233,7 +241,11 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
             break;
         }
 
-        default: return node;
+        default:
+        {
+            WarningMessage(__PRETTY_FUNCTION__, "WRONG TYPE OF NODE");
+            return nullptr;
+        }
     }
 
     // ShowTree(differed_node, FULL_FULL_DUMP_MODE, 0);
@@ -291,7 +303,7 @@ Node* NDifferentiate(Node* node, size_t n_diff, FILE* tex_file, enum TexModes te
     }
 
     // TreeInorderPrint(differed_nodes[3], stdout);
-    fprintf(stdout, "\n");
+    // fprintf(stdout, "\n");
 
     // ShowTree(differed_nodes[n_diff], FULL_FULL_DUMP_MODE, 0);
 
@@ -322,4 +334,94 @@ Node* Differentiate(Node* node, FILE* tex_file, enum TexModes tex_mode)
     differed_node = SimplifyTree(&differed_node);
 
     return differed_node;
+}
+
+Node* FindPartialDerivation(const Node* node, const ExpressionVar* vars, int var_index, size_t n_vars, FILE* tex_file)
+{
+    ASSERT(node     != nullptr)
+    ASSERT(vars     != nullptr)
+    ASSERT(tex_file != nullptr)
+
+    VERIFY_NODE(node);
+
+    Node* one_var_expression = ReplaceVarsWithNumsExceptOne(CN, vars, var_index, n_vars);
+    one_var_expression = SimplifyTree(&one_var_expression);
+
+    // ShowTree(one_var_expression, SIMPLE_DUMP_MODE, 0);
+
+    Node* part_diff = Differentiate(one_var_expression, tex_file, SKIP_STEPS_TEX_MODE);
+
+    // ShowTree(part_diff, SIMPLE_DUMP_MODE, 1);
+
+    NodeDtor(&one_var_expression);
+
+    return part_diff;
+}
+
+Node* DecomposeByMacloren(Node* node, const ExpressionParams* params, double Maklorens_coefficients[], FILE* tex_file)
+{
+    ASSERT(node                   != nullptr)
+    ASSERT(params                 != nullptr)
+    ASSERT(Maklorens_coefficients != nullptr)
+
+    VERIFY_NODE(node);
+
+    Node* Maklorens_formula = CREATE_NUM(0);
+
+    // Node** diff_members = (Node**) calloc(params->Makloren_accuracy, sizeof(Node*));
+    // ASSERT(diff_members != nullptr)
+
+    // diff_members[0] = CopyNode(node);
+//     // double i_coefficient = 1;
+//     // fprintf(stderr, "\ncoeff: %lf\n", i_coefficient);
+//
+//     for (int i_member = 1; i_member <= (int) params->Makloren_accuracy; i_member++)
+//     {
+//         diff_members[i_member] = Differentiate(diff_members[i_member - 1], tex_file, SKIP_STEPS_TEX_MODE);
+//         // fprintf(stderr, "\ncoeff: %d\n", i_member);
+// //         i_coefficient = CalculateTree(diff_members[i_member], params) / (double) factorial(i_member);
+// //         fprintf(stderr, "\ncoeff: %lf\n", i_coefficient);
+// //
+// //         // Maclorens_formula = ADD(CREATE_NUM(i_coefficient), CopyNode(Maclorens_formula));
+//     }
+//
+//     for (int i_member = 0; i_member <= (int) params->Makloren_accuracy; i_member++)
+//     {
+//         // fprintf(stderr, "\ncoeff: %d\n", i_member);
+//         NodeDtor(&(diff_members[i_member]));
+//     }
+
+    for (int i_member = 0; i_member <= (int) params->Makloren_accuracy; i_member++)
+    {
+        Node* diff_i_member = NDifferentiate(node, i_member, tex_file, SKIP_STEPS_TEX_MODE);
+
+        // ShowTree(diff_i_member, SIMPLE_DUMP_MODE, 1);
+
+        Maklorens_coefficients[i_member] = CalculateTree(diff_i_member, params) / (double) factorial(i_member);
+        // fprintf(stderr, "\ncoeff %d: %lf\n", i_member, Maklorens_coefficients[i_member]);
+
+        NodeDtor(&diff_i_member);
+
+        // if (Maklorens_coefficients[i_member] == 0) continue;
+
+        VERIFY_NODE(Maklorens_formula);
+
+        Node* old_formula = CopyNode(Maklorens_formula);
+
+        NodeDtor(&Maklorens_formula);
+
+        char* var_name = (char*) calloc(MAX_VAR_NAME_LEN, sizeof(char));
+        memcpy(var_name, params->vars[NUM_OF_CONSTANTS].name, MAX_VAR_NAME_LEN);
+
+        Node* var_node = DEG(SUB(CREATE_VAR(var_name), CREATE_NUM(params->vars[NUM_OF_CONSTANTS].value)), CREATE_NUM((double) i_member));
+
+        Maklorens_formula = ADD(old_formula, MUL(CREATE_NUM(Maklorens_coefficients[i_member]), var_node));
+
+        // Maklorens_formula = ADD(old_formula, var_node);
+    }
+
+    // free(diff_members);
+    Maklorens_formula = SimplifyTree(&Maklorens_formula);
+
+    return Maklorens_formula;
 }

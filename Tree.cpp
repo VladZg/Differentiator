@@ -350,7 +350,16 @@ enum Operators IsOperator(const char* node_val)
 void NodeValPrint(const Node* node, FILE* stream)
 {
     if (node->val_type == NUM_TYPE)
-        fprintf(stream, "%.3f" , node->num_val);
+    {
+        if (node->num_val == node->num_val) //проверка на nan
+            fprintf(stream, "%." NUMS_PRINT_ACCURACY "f" , node->num_val);
+
+        else
+        {
+            fprintf(stream, "?(inf)?");
+            WarningMessage(__PRETTY_FUNCTION__, "NODE DATA IS NAN... WTF?");
+        }
+    }
 
     else if (node->val_type == VAR_TYPE)
         fprintf(stream, "%s", node->var_val);
