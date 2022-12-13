@@ -260,22 +260,21 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 
     if (tex_mode == PRINT_STEPS_TEX_MODE)
     {
-        TEX_PRINT("\\texttt{%ld step:}\n"
-                        "Finding a derivation of ", *n_step);
+        TEX_PRINT("\\text{\\large{\\texttt{%ld step:} Finding a derivation of ", *n_step);
 
         Node* subfunction_node_for_print = CopyNode(node);
         subfunction_node_for_print->prev = nullptr;
         WriteExpressionInTexFile(subfunction_node_for_print, tex_file, INPRINT_MODE);
-        TEX_PRINT("\n\n");
+        TEX_PRINT("}}\\\\\\\\");
 
-        TEX_PRINT("%s:\n", PickRandomTransition());
-        TEX_PRINT("\n\n${(");
+        TEX_PRINT("%s:\\\\\\\\", PickRandomTransition());
+        TEX_PRINT("${(");
         TranslateTreeToTex(subfunction_node_for_print, tex_file);
         TEX_PRINT(")^\\prime}$ {= ");
-        if (!(random() % 3 )) TEX_PRINT("\\transparent{0.5}{\\textbf{\\textcolor{red}{... = [top secret] = ...}}} =");
-        TEX_PRINT("\\\\= }");
+        if (!(random() % 3 )) TEX_PRINT("\n\\transparent{0.5}{\\textbf{\\textcolor{red}{... = [top secret] = ...}}} = \n");
+        TEX_PRINT("\\\\\\\\= }");
         WriteExpressionInTexFile(differed_node, tex_file, INPRINT_MODE);
-        TEX_PRINT("\n\n");
+        TEX_PRINT("\\\\\\\\\\\\");
 
         NodeDtor(&subfunction_node_for_print);
     }
@@ -305,12 +304,19 @@ Node* NDifferentiate(Node* node, size_t n_diff, FILE* tex_file, enum TexModes te
     for (size_t i = 0; i < n_diff; i++)
     {
         if (is_tex_print)
-            TEX_PRINT("Let's find \\textbf{the %ld derivation} of the expression:\n\n", i+1);
+            TEX_PRINT("\\text{\\large{%ld) Let's find \\textbf{the %ld derivation} of the given function:}}\\\\\\\\", i+1, i+1);
 
         differed_nodes[i+1] = Differentiate(differed_nodes[i], tex_file, tex_mode);
         // differed_nodes[i+1] = CopyNode(differed_nodes[i]);
 
         // ShowTree(differed_nodes[i+1], SIMPLE_DUMP_MODE, 0);
+
+        if (is_tex_print)
+        {
+            TEX_PRINT("\\text{\\large{So \\textbf{the %ld derivation} of the function is:}}\\\\\\\\\\indent{\n", i+1);
+            WriteExpressionInTexFile(differed_nodes[i+1], tex_file, INPRINT_MODE);
+            TEX_PRINT("}\\\\\\\\\\\\\n");
+        }
 
         // if (is_tex_print)
         // {

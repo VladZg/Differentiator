@@ -4,6 +4,7 @@
 #define NLOGGING
 // #define NOPEN_DUMPS
 // #define NDEBUG
+// #define TEX_PAGE_AUTORESIZE
 
 // #define LEFT_N  (node->left)
 // #define RIGHT_N (node->left)

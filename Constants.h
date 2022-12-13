@@ -10,7 +10,7 @@ enum Constants
     WRONG_CALCULATED_NODE = 1423,
     MAX_UNREPLACEBLE_TREE_DEPTH = 10,
     MAX_EXPRESSION_LEN = 100,
-    NUM_OF_TRANSITION_PHRASES = 16,
+    NUM_OF_TRANSITION_PHRASES = 30,
 };
 
 enum VarsConsts
@@ -89,10 +89,10 @@ enum NodeVerifyCodes
 enum TexFileConsts
 {
     TEX_PAGE_WIDTH  = 25,
-    TEX_PAGE_HEIGHT = 75,
+    TEX_PAGE_HEIGHT = 40,
 };
 
-const float TEX_PAGE_COEFF_BETWEEN_WIDTH_HEIGTH = 1.7;
+const float TEX_PAGE_COEFF_BETWEEN_WIDTH_HEIGTH = 1.6;
 const float ONE_NODE_TEX_PAGE_WIDTH = 0.5;
 
 enum TexPrintExpressionModes
@@ -119,7 +119,7 @@ enum TexPrintModes
 
 // const char Tree_replacements[] = {'A', 'B', 'C', 'D'}
 
-const char Transitions[NUM_OF_TRANSITION_PHRASES][100] =
+const char Transitions[NUM_OF_TRANSITION_PHRASES][150] =
            {
                 "It's simple as fuck",
                 "It's really easy to find"   ,
@@ -128,7 +128,7 @@ const char Transitions[NUM_OF_TRANSITION_PHRASES][100] =
                 "Man... Just look",
                 "I spend the hole of my life to find the answer and finally it's",
                 "thanks to the results of my colleagues' scientific work, I know that",
-                "When I was child, my father always told me: \"Remember, son",
+                "When I was a child, my father always told me: \"Remember, son",
                 "For centuries, people have hunted for the secret knowledge that",
                 "What if",
                 "Sounds logical that it is the same as",
@@ -136,7 +136,21 @@ const char Transitions[NUM_OF_TRANSITION_PHRASES][100] =
                 "My roommate mumbled it in his sleep all night",
                 "While preparing for exams, I learned a lot of new things, for example",
                 "A true prince must know that",
-                "My friends always beat me, because I didn't know that"
+                "My friends always beat me, because I didn't know that",
+                "Only by using special skills we might know:",
+                "Lol, i remember that",
+                "Children of USSR must know that",
+                "It was a tragic moment when I learned it on matan exam",
+                "The first task in MIPT was to calculate",
+                "You should be aware of the fact that",
+                "As we know",
+                "Never say it to girls",
+                "She: please, never speak with my dad about math... Me: ok) Also me after homework of matan",
+                "How is't even possible that",
+                "Sometimes I hear the same voice in my head, it always says",
+                "Only after two cups of beer you might understand it",
+                "I always try not to panic, but this thing scares me",
+                "I have no words to describe this fact"
             };
 
 #endif

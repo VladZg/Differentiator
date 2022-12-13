@@ -1,14 +1,18 @@
+cos(x)^3
+
+x = 8
+
+n_differentiate   = 4
+Makloren_accuracy = 3
+tangent_point     = 3
+delta_coverage    = 2.5
+graph_diapasone   = [-10:10]
+
 cos(a+kek/(1^AbObA))+ln(1+x*kek*(1^ln(e)-0))
 
 x = 1
 kek = 13
 a = 3.1415
-
-n_differentiate   = 2
-Makloren_accuracy = 3
-tangent_point     = 0.2
-delta_coverage    = 2.5
-graph_diapasone   = [-1:15]
 
 done: производная + значение
 done: производная n-го порядка + значение в точке
