@@ -238,8 +238,9 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 
                 default:
                 {
-                    fprintf(stderr, "NO SUCH OPERATION");
-                    abort();
+                    fprintf(stderr, KYEL "NO OPERATION WITH CODE %d" KNRM, node->op_val);
+                    // abort();
+                    return nullptr;
                 }
             }
 

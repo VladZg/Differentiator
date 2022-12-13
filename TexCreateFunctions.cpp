@@ -27,17 +27,22 @@ int WriteHeadOfTexFile(FILE* tex_file)
 {
     ASSERT(tex_file != nullptr)
 
-    TEX_PRINT("\\documentclass{article}\n"
+    TEX_PRINT("\\documentclass{article}                                   \n"
+              "\\usepackage[utf8]{inputenc}                               \n"
               "\\usepackage[left=15mm, top=20mm, right=15mm, bottom=20mm, papersize={%dcm,%dcm}]{geometry}\n"
-              "\\usepackage{mathtools}\n"
-              "\\usepackage{graphicx} \n"
-              "\\usepackage{cmap}     \n"
-              "\\usepackage{epstopdf} \n"
-              "\\usepackage[usenames]{color}\n"
-              "\\usepackage{transparent}\n"
-              "\n"
-              "\\begin{document}              \n"
-              "\\author{Zagorodniuk Vladislav}\n",
+              "\\usepackage{mathtools}                                    \n"
+              "\\usepackage{graphicx}                                     \n"
+              "\\usepackage{cmap}                                         \n"
+              "\\usepackage{epstopdf}                                     \n"
+              "\\usepackage[usenames]{color}                              \n"
+              "\\usepackage{transparent}                                  \n"
+              "\\usepackage[unicode, pdftex]{hyperref}                    \n"
+              "\\title{\\textbf{\\LARGE{Expression exploration}}}         \n"
+              "\\author{\\textbf{\\large{Jovanio Jorjinni (mojno verit)}}}\n"
+              "\\date{\\textbf{\\today}}                                  \n"
+              "                                                           \n"
+              "\\begin{document}                                          \n"
+              "\\maketitle                                                \n",
               Tex_page_width, (Tex_page_height = (int) (Tex_page_width * TEX_PAGE_COEFF_BETWEEN_WIDTH_HEIGTH)));
 
     return 1;
@@ -48,8 +53,16 @@ int ShitSomeCringeIntroductionInTexFile(FILE* tex_file)
     ASSERT(tex_file != nullptr)
 
     TEX_PRINT("\\section{\\LARGE{Introduction}}\n"
-              "\\paragraph{Worryingly, the importance of the derriviation is underestimated these days."
-              "In this extraordinary article I will show that the calculation and use of the derivative can be very interesting}\n");
+              "\\paragraph{\\rm{"
+              "Worryingly, the importance of the derriviation is underestimated nowadays. "
+              "In this extraordinary article I will show that the calculation and use of the derivative can be very interesting "
+              "Our British scientists with Italian names living in America have spent about \\textbf{17 YEARS, 14 MONTHS, and 47 DAYS} "
+              "studying the derivative problem and writing universal and unique differentiator. "
+              "This article fully presents the results of their work!"
+              "\\\\\\\\"
+              "With this article, I want to restore the former greatness of mathematics and help the humanity, "
+              "and what's more, most importantly, first-year students of the Moscow Institute of Physics and Technology!!! "
+              "}}\n");
 
     return 1;
 }
@@ -59,8 +72,8 @@ int ShitSomeCringeConclusionInTexFile(FILE* tex_file)
     ASSERT(tex_file != nullptr)
 
     TEX_PRINT("\\section{\\LARGE{Conclusion}}\n"
-              "\\paragraph{\\rm{Thanks Ded for this amazing code experience and a lot of useful advice! "
-              "Happy New Year!!! (Programming language is coming soon...}}\n");
+              "\\paragraph{\\rm{Thanks Ded for this amazing code experience and a lot of useful advice and care! "
+              "Happy New Year!!! (Programming language is coming soon...)\\\\\\\\\\\\\\\\}}\n");
 
     return 1;
 }
@@ -68,6 +81,10 @@ int ShitSomeCringeConclusionInTexFile(FILE* tex_file)
 int WriteTailOfTexFile(FILE* tex_file)
 {
     ASSERT(tex_file != nullptr)
+
+    TEX_PRINT("\\href{https://www.youtube.com/watch?v=dQw4w9WgXcQ}{Repository of the author\\\\}\n"
+              "\\href{https://cutt.ly/50kgC5L}{Follow for more!\\\\}\n"
+              "\\href{https://inlnk.ru/me1EeG}{Or watch us on YouTube!}");
 
     TEX_PRINT("\\end{document}\n");
 
@@ -99,6 +116,8 @@ int IntroduceParameters(const ExpressionParams* params, FILE* tex_file)
 {
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
+
+    TEX_PRINT("\\textbf{\\large{Parameters and constants we use in this work (all data is qualified):}}\\\\\\\\");
 
     TEX_PRINT("\\textbf{Constants} (%d):    \\\\", NUM_OF_CONSTANTS);
 
@@ -163,10 +182,10 @@ int SimplifyExpressionTex(Node** expression, const ExpressionParams* params, FIL
 
     int is_constants_in_tree = IsConstsInTree(*expression, params->vars);
 
-    TEX_PRINT("\\\\\\\\");
-
     if (is_constants_in_tree)
     {
+        TEX_PRINT("\\\\\\\\");
+
         TEX_PRINT("\\textbf{\\large{Firstly, let's insert all constants:}}\\\\\\\\\\indent{\\large{\n");
 
         InsertConstsInExpression(*expression, params);
@@ -175,12 +194,18 @@ int SimplifyExpressionTex(Node** expression, const ExpressionParams* params, FIL
         TEX_PRINT("}\\\\}\n\\\\\\\\");
     }
 
-    TEX_PRINT("\\textbf{\\large{%s simplify this expression (if possible):}}\\\\\\\\\\indent{\\large{\n", (is_constants_in_tree ? "And" : "Firstly, let's"));
-
+    int old_num_of_nodes = TreeNumberOfNodes(*expression);
     *expression = SimplifyTree(expression);
-    PrintExpressionAsFunction(*(params->expression), params, "f", tex_file);
+    int new_number_of_nodes = TreeNumberOfNodes(*expression);
 
-    TEX_PRINT("}\\\\}\n");
+    if (old_num_of_nodes != new_number_of_nodes)
+    {
+        if (!is_constants_in_tree) TEX_PRINT("\\\\\\\\");
+
+        TEX_PRINT("\\textbf{\\large{%s simplify this expression:}}\\\\\\\\\\indent{\\large{\n", (is_constants_in_tree ? "And" : "Firstly, let's"));
+        PrintExpressionAsFunction(*(params->expression), params, "f", tex_file);
+        TEX_PRINT("}\\\\}\n");
+    }
 
     return 1;
 }
@@ -312,7 +337,7 @@ int ExploreFunctionOfManyVariablesTex(const Node* expression, const ExpressionPa
 
     int is_multiple_variables_in_function = IsVarsInTree(expression) && params->n_vars - NUM_OF_CONSTANTS > 1;
 
-    TEX_PRINT("\\section{\\LARGE{Exploration the expression%s}}\n", (is_multiple_variables_in_function ? " as a function of multiple variables" : ""));
+    TEX_PRINT("\\section{\\LARGE{Exploration of the expression%s}}\n", (is_multiple_variables_in_function ? " as a function of multiple variables" : ""));
 
     //Рассчёт значения в точке
     CalculateExpressionTex(*(params->expression), params, tex_file);
@@ -364,8 +389,9 @@ int DecomposeOnMaklorensFormulaTex(Node* function_of_the_first_variable, Express
     remaining_member_of_decomposing = SimplifyTree(&remaining_member_of_decomposing);
 
     // ShowTree(Maklorens_formula, FULL_FULL_DUMP_MODE, 1);
-    TEX_PRINT("\\textbf{\\large{Maklorens formula for $%s \\to %s_0 = %." NUMS_PRINT_ACCURACY "lf$}:}\\\\\\\\\\indent{\n"
+    TEX_PRINT("\\textbf{\\large{First %ld members of Maklorens decomposition for $%s \\to %s_0 = %." NUMS_PRINT_ACCURACY "lf$}:}\\\\\\\\\\indent{\n"
             "f(%s) = ",
+            params->Makloren_accuracy,
             params->vars[NUM_OF_CONSTANTS].name,  params->vars[NUM_OF_CONSTANTS].name,
             params->vars[NUM_OF_CONSTANTS].value, params->vars[NUM_OF_CONSTANTS].name);
     WriteExpressionInTexFile(Maklorens_formula, tex_file, INPRINT_MODE);
@@ -648,7 +674,7 @@ int ExploreFunctionOfTheFirstVariableTex(Node** function_of_the_first_variable, 
     int is_more_than_one_variable = (int) params->n_vars - NUM_OF_CONSTANTS > 1;
 
     if (is_more_than_one_variable)
-        TEX_PRINT("\\section{\\LARGE{Exploration the expression as a function of the first variable\\\\}}\n");
+        TEX_PRINT("\\section{\\LARGE{Exploration of the expression as a function of the first variable}}\n");
 
     if (!(*function_of_the_first_variable)) return 1;
 
@@ -687,7 +713,6 @@ int FillTexFile(FILE* tex_file, ExpressionParams* params)
     TEX_PRINT("\\section{\\LARGE{Some basic knowledge about researching problem...}}");
 
     //параметры программы
-    TEX_PRINT("\\textbf{\\large{Parameters and constants we use in this work:}}\\\\\\\\");
     IntroduceParameters(params, tex_file);
 
     //Печать начального выражения
@@ -736,13 +761,19 @@ int CompileTexFile(const char* filename)
 
     system(cmd1);
 
-    char cmd2[200] = "git add ./TexFiles/";
-    strcat(cmd2, filename);
-    strcat(cmd2, ".pdf *.png; git commit ./TexFiles/");
-    strcat(cmd2, filename);
-    strcat(cmd2, ".pdf *.png -m \"auto-commit\""); // ;git push
+    char full_filename[100] = {};
+    sprintf(full_filename, "./TexFiles/%s.pdf", filename);
 
-    system(cmd2);
+    if (!IsFileExist(full_filename))
+    {
+        char cmd2[200] = "git add ";
+        strcat(cmd2, full_filename);
+        strcat(cmd2, " *.png; git commit ./TexFiles/");
+        strcat(cmd2, filename);
+        strcat(cmd2, ".pdf *.png -m \"auto-commit\""); // ;git push
+
+        system(cmd2);
+    }
 
     return 1;
 }

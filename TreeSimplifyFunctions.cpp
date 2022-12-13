@@ -328,7 +328,7 @@ Node* SimplifyTree(Node** node)
 
     if (*node) return *node;
 
-    WarningMessage(__PRETTY_FUNCTION__, "TREE SIMPLIFIED WRONGLY");
+    WarningMessage(__PRETTY_FUNCTION__, KYEL "TREE SIMPLIFIED WRONGLY" KNRM);
     abort();
 
     return nullptr;
