@@ -38,18 +38,33 @@ int TranslateNodeToTex(FILE* tex_file, const Node* node, const char* op_text, en
         {
             enum Operators prev_op_val = node->prev->op_val;
 
-            if ( prev_op_val    == OP_DIV         ||
-                 prev_op_val    == OP_SQRT        ||
-               ( node->op_val   == OP_DEG  &&
-                 prev_op_val    != OP_DEG    )    ||
-               ((node->op_val   == OP_ADD  ||
-                 node->op_val   == OP_SUB    ) &&
-                (prev_op_val    == OP_ADD)   )    ||
-                 prev_op_val    == OP_EXP)
+            if ( prev_op_val  == OP_DIV           ||
+                 prev_op_val  == OP_SQRT          ||
+               ( node->op_val == OP_DEG    &&
+                 prev_op_val  != OP_DEG      )    ||
+               ((node->op_val == OP_ADD    ||
+                 node->op_val == OP_SUB      ) &&
+                (prev_op_val  == OP_ADD)     )    ||
+                 prev_op_val  == OP_EXP             )
 
                 is_print_brackets = 0;
 
-            if (prev_op_val == OP_DEG) is_print_brackets = 1;
+            if (prev_op_val == OP_DEG   ||
+                (node->op_val == OP_MUL    &&
+                (prev_op_val  == OP_LOG    ||
+                 prev_op_val  == OP_LN     ||
+                 prev_op_val  == OP_SIN    ||
+                 prev_op_val  == OP_COS    ||
+                 prev_op_val  == OP_TG     ||
+                 prev_op_val  == OP_CTG    ||
+                 prev_op_val  == OP_SH     ||
+                 prev_op_val  == OP_CH     ||
+                 prev_op_val  == OP_ARCSIN ||
+                 prev_op_val  == OP_ARCCOS ||
+                 prev_op_val  == OP_ARCTG  ||
+                 prev_op_val  == OP_ARCCTG   )))
+
+                is_print_brackets = 1;
         }
     }
 

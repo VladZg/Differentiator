@@ -1,6 +1,7 @@
-sin(x)^3
+sin(x*y)^3
 
-x = 3
+x = 3.1415
+y = 2
 
 n_differentiate   = 3
 Makloren_accuracy = 4

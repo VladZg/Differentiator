@@ -207,6 +207,21 @@ int AddConstants(ExpressionParams* params)
 
 #undef DEF_CONST
 
+int IsConstsInTree(const Node* node, const ExpressionVar* vars)
+{
+    ASSERT(vars != nullptr)
+
+    if (!node) return 0;
+
+    if (IsConstsInTree(node->left, vars) || IsConstsInTree(node->right, vars))
+        return 1;
+
+    if (node->val_type == VAR_TYPE && FindVarIndex(node->var_val, vars, NUM_OF_CONSTANTS) != NO_VAR_NAME)
+        return 1;
+
+    return 0;
+}
+
 void PrintParametersPoint(FILE* stream, const ExpressionParams* params)
 {
     if (params->n_vars == NUM_OF_CONSTANTS) return;

@@ -19,7 +19,8 @@
 #include "./DiffDSL.h"
 #include "./TexCreateFunctions.h"
 
-int Tex_page_width = TEX_PAGE_WIDTH;
+int Tex_page_width  = TEX_PAGE_WIDTH;
+int Tex_page_height = TEX_PAGE_HEIGHT;
 int N_graphs = 0;
 
 int WriteHeadOfTexFile(FILE* tex_file)
@@ -34,8 +35,9 @@ int WriteHeadOfTexFile(FILE* tex_file)
               "\\usepackage{epstopdf} \n"
             //   "\\graphicspath{TexFiles/}\n"
               "\n"
-              "\\begin{document}      \n",
-              Tex_page_width, TEX_PAGE_HEIGHT);
+              "\\begin{document}              \n"
+              "\\author{Zagorodniuk Vladislav}\n",
+              Tex_page_width, (Tex_page_height = (int) (Tex_page_width * TEX_PAGE_COEFF_BETWEEN_WIDTH_HEIGTH)));
 
     return 1;
 }
@@ -70,8 +72,10 @@ int PrintExpressionAsFunction(const Node* expression, const ExpressionParams* pa
         TEX_PRINT("(");
         PrintAllVarNames(tex_file, params);
         fseek(tex_file, -2, SEEK_CUR);
-        TEX_PRINT(") = ");
+        TEX_PRINT(")");
     }
+
+    TEX_PRINT(" = ");
 
     WriteExpressionInTexFile(expression, tex_file, INPRINT_MODE);
 
@@ -112,14 +116,24 @@ int SimplifyExpressionTex(Node** expression, const ExpressionParams* params, FIL
 
     if (!expression) return 1;
 
-    InsertConstsInExpression(*expression, params);
-    *expression = SimplifyTree(expression);
+    int is_constants_in_tree = IsConstsInTree(*expression, params->vars);
 
-    if (IsVarsInTree(*expression))
+    TEX_PRINT("\n\n");
+
+    if (is_constants_in_tree)
     {
-        TEX_PRINT("\n\nFirstly, let's insert all constants and simplify this expression: ");
+        TEX_PRINT("Firstly, let's insert all constants: ");
+
+        InsertConstsInExpression(*expression, params);
         PrintExpressionAsFunction(*(params->expression), params, "f", tex_file);
+
+        TEX_PRINT("\n\n");
     }
+
+    TEX_PRINT("%s simplify this expression (if possible): ", (is_constants_in_tree ? "And" : "Firstly, let's"));
+
+    *expression = SimplifyTree(expression);
+    PrintExpressionAsFunction(*(params->expression), params, "f", tex_file);
 
     TEX_PRINT("\n\n");
 
@@ -147,7 +161,7 @@ int FindNDerivationTex(Node* expression, const ExpressionParams* params, FILE* t
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
-    TEX_PRINT("\\paragraph{Finding the %ld derivation:}\n\n\n", params->n_differentiate);
+    TEX_PRINT("\\paragraph{Finding the %ld derivation}\n\n", params->n_differentiate);
 
     if (!expression) return 1;
 
@@ -179,7 +193,7 @@ int FindFullDerivationTex(const Node* expression, const ExpressionParams* params
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
-    TEX_PRINT("\\paragraph{Finding partical derivations:}\n\n");
+    TEX_PRINT("\\paragraph{Finding partical derivations}\n\n");
 
     if (!expression) return 1;
 
@@ -215,7 +229,7 @@ int FindFullDerivationTex(const Node* expression, const ExpressionParams* params
 
         full_derivation = SimplifyTree(&full_derivation);
 
-        TEX_PRINT("\\paragraph{Finding full derivation:}\n\n");
+        TEX_PRINT("\\paragraph{Finding full derivation}\n\n");
 
         TEX_PRINT("Full derivation:\n\n");
         WriteExpressionInTexFile(full_derivation, tex_file, INPRINT_MODE);
@@ -233,7 +247,7 @@ int FindFullDerivationTex(const Node* expression, const ExpressionParams* params
         return 1;
     }
 
-    TEX_PRINT("There is no variables to count partical derivations\n\n");
+    TEX_PRINT("There is no variables to count partical derivations or full derivation, both of them are 0\n\n");
 
     return 0;
 }
@@ -243,9 +257,11 @@ int ExploreFunctionOfManyVariablesTex(const Node* expression, const ExpressionPa
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
-    TEX_PRINT("\\section{Exploration the expression as a function of multiple variables}\n");
-
     if (!expression) return 1;
+
+    int is_multiple_variables_in_function = IsVarsInTree(expression) && params->n_vars - NUM_OF_CONSTANTS > 1;
+
+    TEX_PRINT("\\section{Exploration of the expression%s}\n", (is_multiple_variables_in_function ? " as a function of multiple variables" : ""));
 
     //Рассчёт значения в точке
     CalculateExpressionTex(*(params->expression), params, tex_file);
@@ -281,44 +297,39 @@ int DecomposeOnMaklorensFormulaTex(Node* function_of_the_first_variable, Express
 
     if (!function_of_the_first_variable) return 1;
 
-    if ((int) params->n_vars - NUM_OF_CONSTANTS >= 1)
-    {
-        double* Maklorens_coefficients = (double*) calloc(params->Makloren_accuracy + 1, sizeof(double));
-        ASSERT(Maklorens_coefficients != nullptr)
+    TEX_PRINT("\\paragraph{Decomposing on Macloren's formula}\n\n");
 
-        Node* Maklorens_formula = DecomposeByMacloren(function_of_the_first_variable, params, Maklorens_coefficients, tex_file);
-        Maklorens_formula = SimplifyTree(&Maklorens_formula);
+    double* Maklorens_coefficients = (double*) calloc(params->Makloren_accuracy + 1, sizeof(double));
+    ASSERT(Maklorens_coefficients != nullptr)
 
-        char* var_name = (char*) calloc(MAX_VAR_NAME_LEN, sizeof(char));
-        memcpy(var_name, params->vars[NUM_OF_CONSTANTS].name, MAX_VAR_NAME_LEN);
+    Node* Maklorens_formula = DecomposeByMacloren(function_of_the_first_variable, params, Maklorens_coefficients, tex_file);
+    Maklorens_formula = SimplifyTree(&Maklorens_formula);
 
-        Node* remaining_member_of_decomposing = DEG(SUB(CREATE_VAR(var_name), CREATE_NUM(params->vars[NUM_OF_CONSTANTS].value)),
-                                                    CREATE_NUM(params->Makloren_accuracy));
-        remaining_member_of_decomposing = SimplifyTree(&remaining_member_of_decomposing);
+    char* var_name = (char*) calloc(MAX_VAR_NAME_LEN, sizeof(char));
+    memcpy(var_name, params->vars[NUM_OF_CONSTANTS].name, MAX_VAR_NAME_LEN);
 
-        // ShowTree(Maklorens_formula, FULL_FULL_DUMP_MODE, 1);
-        TEX_PRINT("\\textbf{Maklorens formula for $%s \\to %s_0 = %." NUMS_PRINT_ACCURACY "lf$}:\n\n"
-                  "f(%s) = ",
-                  params->vars[NUM_OF_CONSTANTS].name,  params->vars[NUM_OF_CONSTANTS].name,
-                  params->vars[NUM_OF_CONSTANTS].value, params->vars[NUM_OF_CONSTANTS].name);
-        WriteExpressionInTexFile(Maklorens_formula, tex_file, INPRINT_MODE);
+    Node* remaining_member_of_decomposing = DEG(SUB(CREATE_VAR(var_name), CREATE_NUM(params->vars[NUM_OF_CONSTANTS].value)),
+                                                CREATE_NUM(params->Makloren_accuracy));
+    remaining_member_of_decomposing = SimplifyTree(&remaining_member_of_decomposing);
 
-        TEX_PRINT("+o(");
-        WriteExpressionInTexFile(remaining_member_of_decomposing, tex_file, INPRINT_MODE);
-        TEX_PRINT(")\n\n");
+    // ShowTree(Maklorens_formula, FULL_FULL_DUMP_MODE, 1);
+    TEX_PRINT("\\textbf{Maklorens formula for $%s \\to %s_0 = %." NUMS_PRINT_ACCURACY "lf$}:\n\n"
+            "f(%s) = ",
+            params->vars[NUM_OF_CONSTANTS].name,  params->vars[NUM_OF_CONSTANTS].name,
+            params->vars[NUM_OF_CONSTANTS].value, params->vars[NUM_OF_CONSTANTS].name);
+    WriteExpressionInTexFile(Maklorens_formula, tex_file, INPRINT_MODE);
 
-        int Maklorens_formula_tree_depth = TreeNumberOfNodes(Maklorens_formula) + 5;
-        if (Maklorens_formula_tree_depth * ONE_NODE_TEX_PAGE_WIDTH > Tex_page_width) Tex_page_width = Maklorens_formula_tree_depth * ONE_NODE_TEX_PAGE_WIDTH;
+    TEX_PRINT("+o(");
+    WriteExpressionInTexFile(remaining_member_of_decomposing, tex_file, INPRINT_MODE);
+    TEX_PRINT(")\n\n");
 
-        NodeDtor(&Maklorens_formula);
-        NodeDtor(&remaining_member_of_decomposing);
+    int Maklorens_formula_tree_depth = TreeNumberOfNodes(Maklorens_formula) + 5;
+    if (Maklorens_formula_tree_depth * ONE_NODE_TEX_PAGE_WIDTH > Tex_page_width) Tex_page_width = Maklorens_formula_tree_depth * ONE_NODE_TEX_PAGE_WIDTH;
 
-        free(Maklorens_coefficients);
+    NodeDtor(&Maklorens_formula);
+    NodeDtor(&remaining_member_of_decomposing);
 
-        return 1;
-    }
-
-    TEX_PRINT("Maaaan... Why do you even need full derivation if it's 0?...\n");
+    free(Maklorens_coefficients);
 
     return 0;
 }
@@ -329,6 +340,8 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
     ASSERT(tex_file   != nullptr)
 
     if (!function_of_the_first_variable) return 1;
+
+    TEX_PRINT("\\paragraph{Equations in the point}\n\n");
 
     double old_var_val = params->vars[NUM_OF_CONSTANTS].value;
 
@@ -390,8 +403,8 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
         return 1;
     }
 
-    TEX_PRINT("\\textbf{Tangent equation} for each point is f = 0\n"
-              "Normal equation can't be writen\n");
+    TEX_PRINT("\\textbf{Tangent equation} in each point is f = 0\n\n"
+              "\\textbf{Normal equation} can't be writen\n");
 
     return 0;
 }
@@ -526,9 +539,24 @@ int GraphOfFunction(Node* function_of_the_first_variable, ExpressionParams* para
 
     if (!function_of_the_first_variable) return 0;
 
-    TEX_PRINT("\\textbf{Graph} f(%s) = ", params->vars[NUM_OF_CONSTANTS].name);
+    TEX_PRINT("\\paragraph{Graphics}\n\n");
+
+    int is_vars_in_function = IsVarsInTree(function_of_the_first_variable);
+
+    TEX_PRINT("\\textbf{Graph} f");
+
+    if (is_vars_in_function)
+        TEX_PRINT("(%s)", params->vars[NUM_OF_CONSTANTS].name);
+
+    TEX_PRINT(" = ");
+
     WriteExpressionInTexFile(function_of_the_first_variable, tex_file, INPRINT_MODE);
-    TEX_PRINT(" on the diapasone $%s \\in %s$ :\n\n", params->vars[NUM_OF_CONSTANTS].name, params->graph_diapasone);
+    TEX_PRINT(" on the diapasone ");
+
+    if (is_vars_in_function)
+        TEX_PRINT("$%s \\in $", params->vars[NUM_OF_CONSTANTS].name);
+
+    TEX_PRINT("$%s$ :\n\n", params->graph_diapasone);
 
 //     char function_gnu_formula[300] = {};
 //     TranslateTreeToGnuplotFormula(function_of_the_first_variable, function_gnu_formula);
@@ -561,13 +589,17 @@ int ExploreFunctionOfTheFirstVariableTex(Node** function_of_the_first_variable, 
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
-    TEX_PRINT("\\section{Exploration the function of the first variable}\n");
+    int is_more_than_one_variable = (int) params->n_vars - NUM_OF_CONSTANTS > 1;
+
+    if (is_more_than_one_variable)
+        TEX_PRINT("\\section{Exploration the expression as a function of the first variable}\n");
 
     if (!(*function_of_the_first_variable)) return 1;
 
+    int is_vars_in_function = IsVarsInTree(*function_of_the_first_variable);
     *function_of_the_first_variable = SimplifyTree(function_of_the_first_variable);
 
-    if ((int) params->n_vars - NUM_OF_CONSTANTS > 0)
+    if (is_more_than_one_variable)
     {
         TEX_PRINT("Now let's consider the expression as a function of %s variable:\n"
                           "f(%s) = ", params->vars[NUM_OF_CONSTANTS].name, params->vars[NUM_OF_CONSTANTS].name);
@@ -576,7 +608,8 @@ int ExploreFunctionOfTheFirstVariableTex(Node** function_of_the_first_variable, 
     }
 
     // разложение по Тейлору (Маклорену)
-    DecomposeOnMaklorensFormulaTex(*function_of_the_first_variable, params, tex_file);
+    if (is_vars_in_function)
+        DecomposeOnMaklorensFormulaTex(*function_of_the_first_variable, params, tex_file);
 
     //Построение графика
     GraphOfFunction(*function_of_the_first_variable, params, tex_file);
@@ -594,6 +627,8 @@ int FillTexFile(FILE* tex_file, ExpressionParams* params)
 
     //Введение
     ShitSomeCringeIntroductionInTexFile(tex_file);
+
+    TEX_PRINT("\\section{Some basic knowledge about researching problem...}\n\n");
 
     //Печать начального выражения
     TEX_PRINT("Let's calculate smth with a given function: ");
@@ -639,9 +674,9 @@ int CompileTexFile(const char* filename)
 
     char cmd2[200] = "git add ./TexFiles/";
     strcat(cmd2, filename);
-    strcat(cmd2, ".pdf ./TexFiles/GnuGraph.png; git commit ./TexFiles/");
+    strcat(cmd2, ".pdf *.png; git commit ./TexFiles/");
     strcat(cmd2, filename);
-    strcat(cmd2, ".pdf ./TexFiles/GnuGraph.png -m \"auto-commit\""); // ;git push
+    strcat(cmd2, ".pdf *.png -m \"auto-commit\""); // ;git push
 
     system(cmd2);
 

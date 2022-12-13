@@ -401,7 +401,7 @@ void OperatorPrint(enum Operators op_code, FILE* stream)
     fprintf(stream, "not an operator" );
 }
 
-int IsVarsInTree(Node* node)
+int IsVarsInTree(const Node* node)
 {
     if (!node) return 0;
 

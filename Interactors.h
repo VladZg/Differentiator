@@ -15,6 +15,7 @@ int   ReadExpressionParams(FILE* expression_file, ExpressionParams* params);
 
 void PrintParametersPoint(FILE* stream, const ExpressionParams* params);
 int  AddConstants(ExpressionParams* params);
+int  IsConstsInTree(const Node* node, const ExpressionVar* vars);
 
 void PrintParametersPoint(FILE* stream, const ExpressionParams* params);
 int  PrintAllVarNames    (FILE* stream, const ExpressionParams* params);

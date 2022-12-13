@@ -36,7 +36,7 @@ int NodeConnect(Node* left, Node* right, Node* root);
 
 Node* CreateNode(enum TreeDataType val_type, double num_val, const char* var_val, enum Operators op_val, Node* left, Node* right);
 Node* CopyNode(const Node* node);
-int   IsVarsInTree(Node* node);
+int   IsVarsInTree(const Node* node);
 int   IsOperatorWithOneArgument(enum Operators op_val);
 
 Node* ReplaceNode(Node** replacing_node, Node* new_node);
