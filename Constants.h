@@ -10,7 +10,7 @@ enum Constants
     WRONG_CALCULATED_NODE = 1423,
     MAX_UNREPLACEBLE_TREE_DEPTH = 10,
     MAX_EXPRESSION_LEN = 100,
-    NUM_OF_TRANSITION_PHRASES = 15,
+    NUM_OF_TRANSITION_PHRASES = 16,
 };
 
 enum VarsConsts
@@ -135,7 +135,8 @@ const char Transitions[NUM_OF_TRANSITION_PHRASES][100] =
                 "I was asked not to tell anyone that",
                 "My roommate mumbled it in his sleep all night",
                 "While preparing for exams, I learned a lot of new things, for example",
-                "A true prince must know that"
+                "A true prince must know that",
+                "My friends always beat me, because I didn't know that"
             };
 
 #endif

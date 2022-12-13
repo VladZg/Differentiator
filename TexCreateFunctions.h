@@ -21,6 +21,8 @@
 
 int WriteHeadOfTexFile                 (FILE* tex_file);
 int ShitSomeCringeIntroductionInTexFile(FILE* tex_file);
+int ShitSomeCringeConclusionInTexFile  (FILE* tex_file);
+int IntroduceParameters(const ExpressionParams* params, FILE* tex_file);
 
 int FindFirstDerivationTex           (      Node*  expression, const ExpressionParams* params, FILE* tex_file);
 int SimplifyExpressionTex            (      Node** expression, const ExpressionParams* params, FILE* tex_file);

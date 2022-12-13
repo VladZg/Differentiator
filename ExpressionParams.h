@@ -28,7 +28,7 @@ struct ExpressionParams
 };
 
 int  ExpressionParamsDtor(ExpressionParams* params);
-void ExpressionParamsDump(FILE* stream, ExpressionParams* params);
+void ExpressionParamsDump(FILE* stream, const ExpressionParams* params);
 int  AddVar(char* var_name, double var_val, ExpressionParams* params);
 int  FindVarIndex(const char* var_name, const ExpressionVar* vars, size_t n_vars);
 

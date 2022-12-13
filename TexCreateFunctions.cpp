@@ -33,7 +33,8 @@ int WriteHeadOfTexFile(FILE* tex_file)
               "\\usepackage{graphicx} \n"
               "\\usepackage{cmap}     \n"
               "\\usepackage{epstopdf} \n"
-            //   "\\graphicspath{TexFiles/}\n"
+              "\\usepackage[usenames]{color}\n"
+              "\\usepackage{transparent}\n"
               "\n"
               "\\begin{document}              \n"
               "\\author{Zagorodniuk Vladislav}\n",
@@ -48,6 +49,16 @@ int ShitSomeCringeIntroductionInTexFile(FILE* tex_file)
 
     TEX_PRINT("\\section{Introduction}\n"
               "\\[CrInGeCrInGe Production. Super cringe introduction here:\\]\n");
+
+    return 1;
+}
+
+int ShitSomeCringeConclusionInTexFile(FILE* tex_file)
+{
+    ASSERT(tex_file != nullptr)
+
+    TEX_PRINT("\\section{Conclusion}\n"
+              "\\[Ultrar cringe conclusion here:\\]\n");
 
     return 1;
 }
@@ -81,6 +92,33 @@ int PrintExpressionAsFunction(const Node* expression, const ExpressionParams* pa
 
     return 1;
 }
+
+int IntroduceParameters(const ExpressionParams* params, FILE* tex_file)
+{
+    ASSERT(params     != nullptr)
+    ASSERT(tex_file   != nullptr)
+
+    TEX_PRINT("\\textbf{Constants} (%d):    \n\n", NUM_OF_CONSTANTS);
+
+    for (size_t const_i = 0; const_i < NUM_OF_CONSTANTS; const_i++)
+        TEX_PRINT("\\textcolor{black}{%10s} = %lf\n\n", params->vars[const_i].name, params->vars[const_i].value);
+
+    if (params->n_vars - NUM_OF_CONSTANTS)
+        TEX_PRINT("\\textbf{Variables} (%d):    \n\n", (int) params->n_vars - NUM_OF_CONSTANTS);
+
+    for (size_t var_i = NUM_OF_CONSTANTS; var_i < params->n_vars; var_i++)
+        TEX_PRINT("\\textcolor{black}{%10s} = %lf\n\n", params->vars[var_i].name, params->vars[var_i].value);
+
+    TEX_PRINT("\\textcolor{red}    {\\textbf{\\text{Parameters of exploration      }}}:      \n\n"
+              "\\textcolor{yellow} {\\textsl{\\text{Number of differentiates       }}}: $%ld$\n\n"
+              "\\textcolor{green}  {\\textsl{\\text{Macloren's accuracy            }}}: $%ld$\n\n"
+              "\\textcolor{cyan}   {\\textsl{\\text{Tanget point                   }}}: $%lf$\n\n"
+              "\\textcolor{blue}   {\\textsl{\\text{Delta coverage of tangent point}}}: $%lf$\n\n"
+              "\\textcolor{magenta}{\\textsl{\\text{Graph diapasone                }}}: $%s $\n\n", params->n_differentiate, params->Makloren_accuracy, params->tangent_point, params->delta_coverage, params->graph_diapasone);
+
+    return 1;
+}
+
 
 int FindFirstDerivationTex(Node* expression, const ExpressionParams* params, FILE* tex_file)
 {
@@ -261,7 +299,7 @@ int ExploreFunctionOfManyVariablesTex(const Node* expression, const ExpressionPa
 
     int is_multiple_variables_in_function = IsVarsInTree(expression) && params->n_vars - NUM_OF_CONSTANTS > 1;
 
-    TEX_PRINT("\\section{Exploration of the expression%s}\n", (is_multiple_variables_in_function ? " as a function of multiple variables" : ""));
+    TEX_PRINT("\\section{Exploration the expression%s}\n", (is_multiple_variables_in_function ? " as a function of multiple variables" : ""));
 
     //Рассчёт значения в точке
     CalculateExpressionTex(*(params->expression), params, tex_file);
@@ -391,6 +429,9 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
         char functions_in_point_graph_diapasone[40] = {};
         sprintf(functions_in_point_graph_diapasone, "[%lf:%lf]", params->tangent_point - params->delta_coverage, params->tangent_point + params->delta_coverage);
 
+        TEX_PRINT("Their graphs in $\\delta = %." FUNCTION_VALUE_IN_POINT_ACCURACY "lf$ coverage of the point $%s_0 = %lf$\n\n",
+                  params->delta_coverage, params->vars[NUM_OF_CONSTANTS].name, params->tangent_point);
+
         Node* functions_for_graph_vizualization[3] = {function_of_the_first_variable, tangent_equation, normal_equation};
         CreateGraph(functions_for_graph_vizualization, 3, functions_in_point_graph_diapasone, tex_file);
 
@@ -458,7 +499,7 @@ int TranslateTreeToGnuplotFormula(const Node* node, char* formula)
             case OP_SQRT  : { strcat(formula, "sqrt"        ); break; }
             // case OP_R    : { TranslateNodeToTex(tex_file, node, "+", OP_TEX_INPRINT); break;}
             case OP_LOG   : { strcat(formula, "log"         ); break; }
-            case OP_LN    : { strcat(formula, "ln"          ); break; }
+            case OP_LN    : { strcat(formula, "log"         ); break; }
             case OP_SIN   : { strcat(formula, "sin"         ); break; }
             case OP_COS   : { strcat(formula, "cos"         ); break; }
             case OP_TG    : { strcat(formula, "tan"         ); break; }
@@ -527,7 +568,7 @@ int CreateGraph(Node** functions_of_one_variable, int n_graphs, const char* var_
     sprintf(cmd, "gnuplot %s", full_text_filename);
     system(cmd);
 
-    TEX_PRINT("\\includegraphics[scale=1]{%s.eps}\n\n", filename);
+    TEX_PRINT("\\includegraphics[scale=1.0]{%s.eps}\n\n", filename);
 
     return 1;
 }
@@ -601,7 +642,7 @@ int ExploreFunctionOfTheFirstVariableTex(Node** function_of_the_first_variable, 
 
     if (is_more_than_one_variable)
     {
-        TEX_PRINT("Now let's consider the expression as a function of %s variable:\n"
+        TEX_PRINT("Now let's consider the expression as a function of the first variable %s:\n"
                           "f(%s) = ", params->vars[NUM_OF_CONSTANTS].name, params->vars[NUM_OF_CONSTANTS].name);
         WriteExpressionInTexFile(*function_of_the_first_variable, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
@@ -629,9 +670,11 @@ int FillTexFile(FILE* tex_file, ExpressionParams* params)
     ShitSomeCringeIntroductionInTexFile(tex_file);
 
     TEX_PRINT("\\section{Some basic knowledge about researching problem...}\n\n");
+    TEX_PRINT("\n\nParameters and constants we use in this work:\n\n");
+    IntroduceParameters(params, tex_file);
 
     //Печать начального выражения
-    TEX_PRINT("Let's calculate smth with a given function: ");
+    TEX_PRINT("So let's calculate smth with a given function: ");
     PrintExpressionAsFunction(*(params->expression), params, "f", tex_file);
 
     //Упрощение выражения
@@ -647,6 +690,9 @@ int FillTexFile(FILE* tex_file, ExpressionParams* params)
     ExploreFunctionOfTheFirstVariableTex(&function_of_the_first_variable, params, tex_file);
 
     NodeDtor(&function_of_the_first_variable);
+
+    //Заключение
+    ShitSomeCringeConclusionInTexFile(tex_file);
 
     return 1;
 }

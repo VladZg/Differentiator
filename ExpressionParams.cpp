@@ -6,7 +6,7 @@
 #include "./Tree.h"
 #include "./ExpressionParams.h"
 
-void ExpressionParamsDump(FILE* stream, ExpressionParams* params)
+void ExpressionParamsDump(FILE* stream, const ExpressionParams* params)
 {
     fprintf(stream, KBLU "\n! Expression params:\n"  KNRM);
 
