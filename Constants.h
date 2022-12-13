@@ -108,6 +108,7 @@ enum TexPrintModes
 
 
 #define NUMS_PRINT_ACCURACY "3"
+#define FUNCTION_VALUE_IN_POINT_ACCURACY "5"
 
 // #define TEXT_FOR_PRONOUNCING_FILENAME  "./TextForPronouncing.txt"
 // #define DATABASE_DUMP_HTML_FILENAME    "./DumpInfo/DatabaseDump.html"
@@ -117,22 +118,23 @@ enum TexPrintModes
 
 // const char Tree_replacements[] = {'A', 'B', 'C', 'D'}
 
-const char transitions[NUM_OF_TRANSITION_PHRASES][100] = {
-                                    "It's simple as fuck",
-                                    "It's really easy to find"   ,
-                                    "Even my two-aged sister knows that it equals",
-                                    "If someone asked me that in the middle of the night, I wouldn't hesitate to say",
-                                    "Man... Just look",
-                                    "I spend the hole of my life to find the answer and finally it's",
-                                    "thanks to the results of my colleagues' scientific work, I know that it equals",
-                                    "When I was child, my father always told me: \"Remember, son",
-                                    "For centuries, people have hunted for the secret knowledge that",
-                                    "What if it equals",
-                                    "Sounds logical that it is the same as",
-                                    "I was asked not to tell anyone that",
-                                    "My roommate mumbled it in his sleep all night",
-                                    "While preparing for exams, I learned a lot of new things, for example",
-                                    "A true prince must know that it equals"
-                                 };
+const char Transitions[NUM_OF_TRANSITION_PHRASES][100] =
+           {
+                "It's simple as fuck",
+                "It's really easy to find"   ,
+                "Even my two-aged sister knows that",
+                "If someone asked me that in the middle of the night, I wouldn't hesitate to say",
+                "Man... Just look",
+                "I spend the hole of my life to find the answer and finally it's",
+                "thanks to the results of my colleagues' scientific work, I know that",
+                "When I was child, my father always told me: \"Remember, son",
+                "For centuries, people have hunted for the secret knowledge that",
+                "What if",
+                "Sounds logical that it is the same as",
+                "I was asked not to tell anyone that",
+                "My roommate mumbled it in his sleep all night",
+                "While preparing for exams, I learned a lot of new things, for example",
+                "A true prince must know that"
+            };
 
 #endif

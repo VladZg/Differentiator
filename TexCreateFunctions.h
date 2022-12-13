@@ -29,10 +29,10 @@ int FindNDerivationTex               (      Node*  expression, const ExpressionP
 int FindFullDerivationTex            (const Node*  expression, const ExpressionParams* params, FILE* tex_file);
 int ExploreFunctionOfManyVariablesTex(const Node*  expression, const ExpressionParams* params, FILE* tex_file);
 
-int PrintExpressionAsFunction                   (const ExpressionParams* params, FILE* tex_file);
-Node* TranslateExpresiionToFunctionOfTheFirstVar(const Node* expression, const ExpressionParams* params);
-int TranslateTreeToGnuplotFormula               (const Node* node, char* formula);
-int CreateGraph                                 (const Node* function_of_one_variable, const char* var_diapasone, FILE* tex_file);
+int PrintExpressionAsFunction                   (const Node* expression,  const ExpressionParams* params, const char* function_name, FILE* tex_file);
+Node* TranslateExpresiionToFunctionOfTheFirstVar(const Node*  expression, const ExpressionParams* params);
+int TranslateTreeToGnuplotFormula               (const Node*  node, char* formula);
+int CreateGraph                                 (      Node** function_of_one_variable, int n_graphs, const char* var_diapasone, FILE* tex_file);
 
 int DecomposeOnMaklorensFormulaTex      (Node*  function_of_the_first_variable, const ExpressionParams* params, FILE* tex_file);
 int EquationsInThePointTex              (Node*  function_of_the_first_variable,       ExpressionParams* params, FILE* tex_file);

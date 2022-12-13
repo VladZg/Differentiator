@@ -59,12 +59,12 @@ int WriteTailOfTexFile(FILE* tex_file)
     return 1;
 }
 
-int PrintExpressionAsFunction(const ExpressionParams* params, FILE* tex_file)
+int PrintExpressionAsFunction(const Node* expression, const ExpressionParams* params, const char* function_name, FILE* tex_file)
 {
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
-    TEX_PRINT("f");
+    TEX_PRINT("%s", function_name);
     if (params->n_vars - NUM_OF_CONSTANTS > 0)
     {
         TEX_PRINT("(");
@@ -73,7 +73,7 @@ int PrintExpressionAsFunction(const ExpressionParams* params, FILE* tex_file)
         TEX_PRINT(") = ");
     }
 
-    WriteExpressionInTexFile(*(params->expression), tex_file, INPRINT_MODE);
+    WriteExpressionInTexFile(expression, tex_file, INPRINT_MODE);
 
     return 1;
 }
@@ -91,12 +91,13 @@ int FindFirstDerivationTex(Node* expression, const ExpressionParams* params, FIL
     Node* diff1 = Differentiate(expression, tex_file, PRINT_STEPS_TEX_MODE);
 
     TEX_PRINT("Congratulations! \\textbf{The first derivation of the expression} is:\n\n");
-    WriteExpressionInTexFile(diff1, tex_file, INPRINT_MODE);
 
+    PrintExpressionAsFunction(diff1, params, "f${ '}$", tex_file);
     double diff1_value = CalculateTree(diff1, params);
+    TEX_PRINT("\n\n");
 
     PrintParametersPoint(tex_file, params);
-    TEX_PRINT(" it's value = %." NUMS_PRINT_ACCURACY "lf\n\n", diff1_value);
+    TEX_PRINT(" it's value = %." FUNCTION_VALUE_IN_POINT_ACCURACY "lf\n\n", diff1_value);
 
     NodeDtor(&diff1);
 
@@ -117,7 +118,7 @@ int SimplifyExpressionTex(Node** expression, const ExpressionParams* params, FIL
     if (IsVarsInTree(*expression))
     {
         TEX_PRINT("\n\nFirstly, let's insert all constants and simplify this expression: ");
-        PrintExpressionAsFunction(params, tex_file);
+        PrintExpressionAsFunction(*(params->expression), params, "f", tex_file);
     }
 
     TEX_PRINT("\n\n");
@@ -136,7 +137,7 @@ int CalculateExpressionTex(Node* expression, const ExpressionParams* params, FIL
 
     TEX_PRINT("BRITISH SCIENTISTS WERE SHOCKED, WHEN THEY COUNT IT!!!\n\n");
     PrintParametersPoint(tex_file, params);
-    TEX_PRINT(" \\textbf{it's value} = %." NUMS_PRINT_ACCURACY "lf\n\n", CalculateTree(expression, params));
+    TEX_PRINT(" \\textbf{it's value} = %." FUNCTION_VALUE_IN_POINT_ACCURACY "lf\n\n", CalculateTree(expression, params));
 
     return 1;
 }
@@ -146,22 +147,24 @@ int FindNDerivationTex(Node* expression, const ExpressionParams* params, FILE* t
     ASSERT(params     != nullptr)
     ASSERT(tex_file   != nullptr)
 
-    TEX_PRINT("\\paragraph{Finding the %ld derivation:}\n\n", params->n_differentiate);
+    TEX_PRINT("\\paragraph{Finding the %ld derivation:}\n\n\n", params->n_differentiate);
 
     if (!expression) return 1;
 
-    TEX_PRINT("Let's calculate the %ld derivation of the expression:\n\n", params->n_differentiate);
-
     Node* n_diff = NDifferentiate(expression, params->n_differentiate, tex_file, PRINT_STEPS_TEX_MODE);
 
+    char n_diff_function_name[10] = {};
+    sprintf(n_diff_function_name, "$f^{(%ld)}$", params->n_differentiate);
+
     TEX_PRINT("\\textbf{Finally... The %ld derivation of the expression:}\n\n", params->n_differentiate);
-    WriteExpressionInTexFile(n_diff, tex_file, INPRINT_MODE);
+    PrintExpressionAsFunction(n_diff, params, n_diff_function_name, tex_file);
+    // WriteExpressionInTexFile(n_diff, tex_file, INPRINT_MODE);
     TEX_PRINT("\n\n");
 
     TEX_PRINT("BRITISH SCIENTISTS WERE SHOCKED AGAIN, "
                       "WHEN THEY COUNT THE %ld DERIVATION OF THIS EXPRESSION!!!\n\n", params->n_differentiate);
     PrintParametersPoint(tex_file, params);
-    TEX_PRINT(" it's value = %." NUMS_PRINT_ACCURACY "lf\n\n", CalculateTree(n_diff, params));
+    TEX_PRINT(" it's value = %." FUNCTION_VALUE_IN_POINT_ACCURACY "lf\n\n", CalculateTree(n_diff, params));
 
     int n_diff_tree_depth = TreeNumberOfNodes(n_diff);
     if (n_diff_tree_depth * ONE_NODE_TEX_PAGE_WIDTH > Tex_page_width) Tex_page_width = n_diff_tree_depth * ONE_NODE_TEX_PAGE_WIDTH;
@@ -203,7 +206,7 @@ int FindFullDerivationTex(const Node* expression, const ExpressionParams* params
             full_derivation = ADD(old_full_derivation, DEG(part_diffs[part_diff_j], CREATE_NUM(2)));
 
             PrintParametersPoint(tex_file, params);
-            TEX_PRINT(" \n it's value = %lf !!!\n\n\n", CalculateTree(part_diffs[part_diff_j], params));
+            TEX_PRINT(" \n it's value = %." FUNCTION_VALUE_IN_POINT_ACCURACY "lf !!!\n\n\n", CalculateTree(part_diffs[part_diff_j], params));
         }
 
         old_full_derivation = CopyNode(full_derivation);
@@ -219,7 +222,7 @@ int FindFullDerivationTex(const Node* expression, const ExpressionParams* params
         TEX_PRINT("\n\n");
 
         PrintParametersPoint(tex_file, params);
-        TEX_PRINT(" it's value = %." NUMS_PRINT_ACCURACY "lf !!!\n\n\n", CalculateTree(full_derivation, params));
+        TEX_PRINT(" it's value = %." FUNCTION_VALUE_IN_POINT_ACCURACY "lf !!!\n\n\n", CalculateTree(full_derivation, params));
 
         int full_derivation_tree_depth = TreeNumberOfNodes(full_derivation);
         if (full_derivation_tree_depth * ONE_NODE_TEX_PAGE_WIDTH > Tex_page_width) Tex_page_width = full_derivation_tree_depth * ONE_NODE_TEX_PAGE_WIDTH;
@@ -350,10 +353,7 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
         WriteExpressionInTexFile(tangent_equation, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
 
-        char tangent_equation_graph_diapason[40] = {};
-        sprintf(tangent_equation_graph_diapason, "[%.2lf:%.2lf]", params->tangent_point - 10.0, params->tangent_point + 10.0);
-        CreateGraph(tangent_equation, tangent_equation_graph_diapason, tex_file);
-        TEX_PRINT("\n\n");
+        Node* normal_equation = nullptr;
 
         if (tangent_coefficient != 0)
         {
@@ -362,7 +362,7 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
             var_name = (char*) calloc(MAX_VAR_NAME_LEN, sizeof(char));
             memcpy(var_name, params->vars[NUM_OF_CONSTANTS].name, MAX_VAR_NAME_LEN);
 
-            Node* normal_equation = ADD(MUL(CREATE_NUM(normal_coefficient), SUB(CREATE_VAR(var_name), CREATE_NUM(params->tangent_point))),
+            normal_equation = ADD(MUL(CREATE_NUM(normal_coefficient), SUB(CREATE_VAR(var_name), CREATE_NUM(params->tangent_point))),
                                         CREATE_NUM(function_of_the_first_var_value_in_point));
             normal_equation = SimplifyTree(&normal_equation);
 
@@ -370,21 +370,21 @@ int EquationsInThePointTex(Node* function_of_the_first_variable, ExpressionParam
             TEX_PRINT("f(%s) = ", params->vars[NUM_OF_CONSTANTS].name);
             WriteExpressionInTexFile(normal_equation, tex_file, INPRINT_MODE);
             TEX_PRINT("\n\n");
-
-            char normal_equation_graph_diapason[40] = {};
-            sprintf(normal_equation_graph_diapason, "[%.2lf:%.2lf]", params->tangent_point - 10.0, params->tangent_point + 10.0);
-            CreateGraph(normal_equation, normal_equation_graph_diapason, tex_file);
-            TEX_PRINT("\n\n");
-
-            NodeDtor(&normal_equation);
         }
 
         else TEX_PRINT("\\textbf{Normal equation} in the point ${%s_0}$ = %." NUMS_PRINT_ACCURACY "lf: %s = %." NUMS_PRINT_ACCURACY "lf\n\n",
                        params->vars[NUM_OF_CONSTANTS].name, params->tangent_point, params->vars[NUM_OF_CONSTANTS].name, function_of_the_first_var_value_in_point);
 
+        char functions_in_point_graph_diapasone[40] = {};
+        sprintf(functions_in_point_graph_diapasone, "[%lf:%lf]", params->tangent_point - params->delta_coverage, params->tangent_point + params->delta_coverage);
+
+        Node* functions_for_graph_vizualization[3] = {function_of_the_first_variable, tangent_equation, normal_equation};
+        CreateGraph(functions_for_graph_vizualization, 3, functions_in_point_graph_diapasone, tex_file);
+
         params->vars[NUM_OF_CONSTANTS].value = old_var_val;
 
         NodeDtor(&tangent_equation);
+        NodeDtor(&normal_equation);
         NodeDtor(&function_of_the_first_var_diff);
 
         return 1;
@@ -470,14 +470,12 @@ int TranslateTreeToGnuplotFormula(const Node* node, char* formula)
     return 1;
 }
 
-int CreateGraph(const Node* function_of_one_variable, const char* var_diapasone, FILE* tex_file)
+int CreateGraph(Node** functions_of_one_variable, int n_graphs, const char* var_diapasone, FILE* tex_file)
 {
-    ASSERT(function_of_one_variable!= nullptr)
-    ASSERT(tex_file                != nullptr)
+    ASSERT(functions_of_one_variable!= nullptr)
+    ASSERT(tex_file                 != nullptr)
 
-    char function_gnu_formula[300] = {};
-
-    TranslateTreeToGnuplotFormula(function_of_one_variable, function_gnu_formula);
+    if (n_graphs <= 0) return 1;
 
     char filename[50] = "GnuGraph";
     char file_num[5] = {};
@@ -487,19 +485,30 @@ int CreateGraph(const Node* function_of_one_variable, const char* var_diapasone,
     char full_text_filename[100] = {};
     sprintf(full_text_filename, "./TexFiles/%s.txt", filename);
 
-    FILE* tangent_equation_graph_file = fopen(full_text_filename, "w");
+    FILE* equation_graph_file = fopen(full_text_filename, "w");
 
-    fprintf(tangent_equation_graph_file, "set terminal png\n"
-                            "set output \"./TexFiles/%s.png\"\n"
-                            "plot %s %s\n",
-                            filename, var_diapasone, function_gnu_formula);
+    fprintf(equation_graph_file, "set terminal png\n"
+                                "set output \"./TexFiles/%s.png\"\n"
+                                "plot %s ", filename, var_diapasone);
 
-    fprintf(tangent_equation_graph_file, "set terminal eps\n"
-                            "set output \"./TexFiles/%s.eps\"\n"
-                            "plot %s %s\n",
-                            filename, var_diapasone, function_gnu_formula);
+    for (int graph_i = 0; graph_i < n_graphs; graph_i++)
+    {
+        char function_i_gnu_formula[300] = {};
 
-    fclose(tangent_equation_graph_file);
+        TranslateTreeToGnuplotFormula(functions_of_one_variable[graph_i], function_i_gnu_formula);
+
+        fprintf(equation_graph_file, "%s, ", function_i_gnu_formula);
+    }
+
+    fseek(equation_graph_file, -2, SEEK_CUR);
+
+    fprintf(equation_graph_file, "\n\n");
+
+    fprintf(equation_graph_file, "set terminal eps\n"
+                                 "set output \"./TexFiles/%s.eps\"\n"
+                                 "replot\n", filename);
+
+    fclose(equation_graph_file);
 
     char cmd[120] = {};
     sprintf(cmd, "gnuplot %s", full_text_filename);
@@ -542,7 +551,7 @@ int GraphOfFunction(Node* function_of_the_first_variable, ExpressionParams* para
 //
 //     TEX_PRINT("\\includegraphics[scale=1]{GnuGraph.eps}\n\n");
 
-    CreateGraph(function_of_the_first_variable, params->graph_diapasone, tex_file);
+    CreateGraph(&function_of_the_first_variable, 1, params->graph_diapasone, tex_file);
 
     return 1;
 }
@@ -588,7 +597,7 @@ int FillTexFile(FILE* tex_file, ExpressionParams* params)
 
     //Печать начального выражения
     TEX_PRINT("Let's calculate smth with a given function: ");
-    PrintExpressionAsFunction(params, tex_file);
+    PrintExpressionAsFunction(*(params->expression), params, "f", tex_file);
 
     //Упрощение выражения
     SimplifyExpressionTex(params->expression, params, tex_file);

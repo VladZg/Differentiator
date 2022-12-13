@@ -178,6 +178,7 @@ int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
     fscanf(expression_file, " n_differentiate   = %ld ", &(params->n_differentiate));
     fscanf(expression_file, " Makloren_accuracy = %ld ", &(params->Makloren_accuracy));
     fscanf(expression_file, " tangent_point     = %lf ", &(params->tangent_point));
+    fscanf(expression_file, " delta_coverage    = %lf ", &(params->delta_coverage));
     fscanf(expression_file, " graph_diapasone   = %s  ", params->graph_diapasone);
 
     // InsertConstsInExpression(*(params->expression), params);

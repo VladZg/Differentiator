@@ -53,6 +53,8 @@ int TranslateNodeToTex(FILE* tex_file, const Node* node, const char* op_text, en
         }
     }
 
+    else is_print_brackets = 0;
+
     if (is_print_brackets) TEX_PRINT("(");
 
     if (mode == OP_TEX_PREPRINT_ONE_ARG)

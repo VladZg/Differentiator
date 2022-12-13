@@ -26,7 +26,8 @@ void ExpressionParamsDump(FILE* stream, ExpressionParams* params)
                     "!-Number of differentiates: %ld\n"
                     "!-Macloren's accuracy:      %ld\n"
                     "!-Tanget point:             %lf\n"
-                    "!-Graph diapasone:          %s\n\n", params->n_differentiate, params->Makloren_accuracy, params->tangent_point, params->graph_diapasone);
+                    "!-Delta_coverage:           %lf\n"
+                    "!-Graph diapasone:          %s \n\n", params->n_differentiate, params->Makloren_accuracy, params->tangent_point, params->delta_coverage, params->graph_diapasone);
 }
 
 int ExpressionParamsDtor(ExpressionParams* params)
@@ -38,6 +39,8 @@ int ExpressionParamsDtor(ExpressionParams* params)
 
     params->Makloren_accuracy = 0;
     params->n_differentiate   = 0;
+    params->tangent_point     = 0;
+    params->delta_coverage    = 0;
 
     for (size_t var_i = 0; var_i < params->n_vars; var_i++)
     {

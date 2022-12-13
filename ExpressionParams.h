@@ -23,6 +23,7 @@ struct ExpressionParams
     size_t n_differentiate;
     size_t Makloren_accuracy;
     double tangent_point;
+    double delta_coverage;
     char*  graph_diapasone;
 };
 

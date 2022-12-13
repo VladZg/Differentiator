@@ -23,7 +23,7 @@ static int factorial(int num)
 
 const char* PickRandomTransition()
 {
-    return transitions[rand() % NUM_OF_TRANSITION_PHRASES];
+    return Transitions[rand() % NUM_OF_TRANSITION_PHRASES];
 }
 
 double CalculateTree(Node* node, const ExpressionParams* params)
@@ -260,17 +260,22 @@ Node* Diff(Node* node, FILE* tex_file, size_t* n_step, enum TexModes tex_mode)
 
     if (tex_mode == PRINT_STEPS_TEX_MODE)
     {
-        TEX_PRINT("%ld step.\n"
-                        "finding a derivation of:\n\n", *n_step);
-        WriteExpressionInTexFile(node, tex_file, INPRINT_MODE);
+        TEX_PRINT("\\texttt{%ld step:}\n"
+                        "Finding a derivation of ", *n_step);
+
+        Node* subfunction_node_for_print = CopyNode(node);
+        subfunction_node_for_print->prev = nullptr;
+        WriteExpressionInTexFile(subfunction_node_for_print, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
 
         TEX_PRINT("%s:\n", PickRandomTransition());
         TEX_PRINT("\n\n${(");
-        TranslateTreeToTex(node, tex_file);
+        TranslateTreeToTex(subfunction_node_for_print, tex_file);
         TEX_PRINT(")^\\prime}$ {= ... = [top secret] = ... = \\\\ = }");
         WriteExpressionInTexFile(differed_node, tex_file, INPRINT_MODE);
         TEX_PRINT("\n\n");
+
+        NodeDtor(&subfunction_node_for_print);
     }
 
 //     ShowTree(node, SIMPLE_DUMP_MODE, 0);
@@ -298,7 +303,7 @@ Node* NDifferentiate(Node* node, size_t n_diff, FILE* tex_file, enum TexModes te
     for (size_t i = 0; i < n_diff; i++)
     {
         if (is_tex_print)
-            TEX_PRINT("Calculating the %ld derivation of the expression:\n\n", i+1);
+            TEX_PRINT("Let's find \\textbf{the %ld derivation} of the expression:\n\n", i+1);
 
         differed_nodes[i+1] = Differentiate(differed_nodes[i], tex_file, tex_mode);
         // differed_nodes[i+1] = CopyNode(differed_nodes[i]);
