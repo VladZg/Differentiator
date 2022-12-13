@@ -359,7 +359,7 @@ void NodeValPrint(const Node* node, FILE* stream)
     if (node->val_type == NUM_TYPE)
     {
         if (node->num_val == node->num_val) //проверка на nan
-            fprintf(stream, "%." NUMS_PRINT_ACCURACY "f" , node->num_val);
+            fprintf(stream, "%lg" , node->num_val);
 
         else
         {

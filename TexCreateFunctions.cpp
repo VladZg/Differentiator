@@ -600,6 +600,7 @@ int CreateGraph(Node** functions_of_one_variable, int n_graphs, const char* var_
     fprintf(equation_graph_file, "\n\n");
 
     fprintf(equation_graph_file, "set terminal eps\n"
+                                 "set samples 1000\n"
                                  "set output \"./TexFiles/%s.eps\"\n"
                                  "replot\n", filename);
 
