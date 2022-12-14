@@ -88,12 +88,12 @@ enum NodeVerifyCodes
 
 enum TexFileConsts
 {
-    TEX_PAGE_WIDTH  = 25,
-    TEX_PAGE_HEIGHT = 40,
+    TEX_PAGE_WIDTH  = 35,
+    TEX_PAGE_HEIGHT = 56,
 };
 
 const float TEX_PAGE_COEFF_BETWEEN_WIDTH_HEIGTH = 1.6;
-const float ONE_NODE_TEX_PAGE_WIDTH = 0.5;
+const float ONE_NODE_TEX_PAGE_WIDTH = 0.4;
 
 enum TexPrintExpressionModes
 {

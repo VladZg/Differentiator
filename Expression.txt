@@ -1,18 +1,14 @@
-ln(1+ded)
-
-ded = 0
-
-n_differentiate   = 2
-Makloren_accuracy = 5
-tangent_point     = 0
-delta_coverage    = 0.5
-graph_diapasone   = [-2:2]
-
-cos(a+kek/(1^AbObA))+ln(1+x*kek*(1^ln(e)-0))
+cos(kek)*a*x^2-tg(kek/e)
 
 x = 1
 kek = 13
 a = 3.1415
+
+n_differentiate   = 2
+Makloren_accuracy = 4
+tangent_point     = 0
+delta_coverage    = 0.5
+graph_diapasone   = [-2:2]
 
 done: производная + значение
 done: производная n-го порядка + значение в точке
