@@ -8,8 +8,8 @@
 #include <cstring>
 #include "./Constants.h"
 #include "./DefineColourConsts.h"
-#include "../Libs/Stack/Assert.h"
-#include "../Libs/Stack/Stack.h"
+#include "../Libs/Stack/Include/Assert.h"
+#include "../Libs/Stack/Include/Stack.h"
 #include "./Tree.h"
 #include "./TreeDump.h"
 #include "./ExpressionReader.h"

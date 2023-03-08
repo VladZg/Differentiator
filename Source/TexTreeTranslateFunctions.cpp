@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../Include/Constants.h"
 #include "../Include/DefineColourConsts.h"
-#include "../Libs/Stack/Assert.h"
+#include "../Libs/Stack/Include/Assert.h"
 #include "../Include/Tree.h"
 #include "../Include/Interactors.h"
 #include "../Include/TexTreeTranslateFunctions.h"

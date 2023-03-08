@@ -6,8 +6,8 @@
 #include <cstring>
 #include "../Include/Constants.h"
 #include "../Include/DefineColourConsts.h"
-#include "../Libs/Stack/Assert.h"
-#include "../Libs/Stack/Stack.h"
+#include "../Libs/Stack/Include/Assert.h"
+#include "../Libs/Stack/Include/Stack.h"
 #include "../Include/CheckFile.h"
 #include "../Include/Tree.h"
 #include "../Include/TreeDump.h"

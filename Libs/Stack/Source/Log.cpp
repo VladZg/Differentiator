@@ -1,8 +1,8 @@
-#include "Config.h"
+#include "../Include/Config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "time.h"
+#include <time.h>
 
 #define LOG_FILE_NAME_DEFAULT "Log.txt"
 

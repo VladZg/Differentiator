@@ -1,7 +1,7 @@
 #include "../Include/Config.h"
 #include <stdlib.h>
 #include "../Include/DefineColourConsts.h"
-#include "../Libs/Stack/Assert.h"
+#include "../Libs/Stack/Include/Assert.h"
 #include "../Include/Tree.h"
 #include "../Include/TreeDump.h"
 #include "../Include/ExpressionReader.h"

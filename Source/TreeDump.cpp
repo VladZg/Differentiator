@@ -3,7 +3,7 @@
 #include <time.h>
 #include "../Include/Constants.h"
 #include "../Include/DefineColourConsts.h"
-#include "../Libs/Stack/Assert.h"
+#include "../Libs/Stack/Include/Assert.h"
 #include "../Include/Tree.h"
 
 extern size_t N_dump_picture;

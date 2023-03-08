@@ -8,8 +8,8 @@ SRC_DIR = ./Source/
 LIBS_DIR = ./Libs/
 
 SRC = 	$(APP_DIR)main.cpp							\
-		$(LIBS_DIR)Stack/Stack.cpp					\
-		$(LIBS_DIR)Stack/Log.cpp					\
+		$(LIBS_DIR)Stack/Source/Stack.cpp			\
+		$(LIBS_DIR)Stack/Source/Log.cpp				\
 		$(SRC_DIR)CheckFile.cpp						\
 		$(SRC_DIR)Tree.cpp							\
 		$(SRC_DIR)TreeDump.cpp						\
