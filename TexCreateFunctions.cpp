@@ -765,16 +765,16 @@ int CompileTexFile(const char* filename)
     char full_filename[100] = {};
     sprintf(full_filename, "./TexFiles/%s.pdf", filename);
 
-    if (!IsFileExist(full_filename))
-    {
-        char cmd2[200] = "git add ";
-        strcat(cmd2, full_filename);
-        strcat(cmd2, " *.png; git commit ./TexFiles/");
-        strcat(cmd2, filename);
-        strcat(cmd2, ".pdf *.png -m \"auto-commit\""); // ;git push
-
-        system(cmd2);
-    }
+    // if (!IsFileExist(full_filename))
+    // {
+        // char cmd2[200] = "git add ";
+        // strcat(cmd2, full_filename);
+        // strcat(cmd2, " *.png; git commit ./TexFiles/");
+        // strcat(cmd2, filename);
+        // strcat(cmd2, ".pdf *.png -m \"auto-commit\""); // ;git push
+//
+        // system(cmd2);
+    // }
 
     return 1;
 }
