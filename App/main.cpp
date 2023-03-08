@@ -1,22 +1,22 @@
-#include "./Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <cstdio>
 #include <cstring>
-#include "./Constants.h"
-#include "./DefineColourConsts.h"
-#include "./Stack/Assert.h"
-#include "./Stack/Stack.h"
-#include "./CheckFile.h"
-#include "./Tree.h"
-#include "./TreeDump.h"
-#include "./ExpressionReader.h"
-#include "./Interactors.h"
-#include "./TexTreeTranslateFunctions.h"
-#include "./TreeSimplifyFunctions.h"
-#include "./MathFunctions.h"
-#include "./DiffDSL.h"
-#include "./TexCreateFunctions.h"
+#include "../Constants.h"
+#include "../DefineColourConsts.h"
+#include "../Stack/Assert.h"
+#include "../Stack/Stack.h"
+#include "../CheckFile.h"
+#include "../Tree.h"
+#include "../TreeDump.h"
+#include "../ExpressionReader.h"
+#include "../Interactors.h"
+#include "../TexTreeTranslateFunctions.h"
+#include "../TreeSimplifyFunctions.h"
+#include "../MathFunctions.h"
+#include "../DiffDSL.h"
+#include "../TexCreateFunctions.h"
 
 // const char  DATABASE_FILENAME_DEFAULT[] = "./Database.txt";
 // const char* DATABASE_FILENAME           = nullptr;
