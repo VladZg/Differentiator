@@ -1,10 +1,10 @@
-#include "./Config.h"
+#include "../Include/Config.h"
 #include <stdlib.h>
-#include "./DefineColourConsts.h"
-#include "./Stack/Assert.h"
-#include "./Tree.h"
-#include "./TreeDump.h"
-#include "./ExpressionReader.h"
+#include "../Include/DefineColourConsts.h"
+#include "../Libs/Stack/Assert.h"
+#include "../Include/Tree.h"
+#include "../Include/TreeDump.h"
+#include "../Include/ExpressionReader.h"
 
 // const char* S = nullptr;
 

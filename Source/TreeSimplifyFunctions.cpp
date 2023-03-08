@@ -1,11 +1,11 @@
-#include "./Config.h"
+#include "../Include/Config.h"
 #include <stdlib.h>
 #include <math.h>
-#include "./Constants.h"
-#include "./DefineColourConsts.h"
-#include "./Stack/Assert.h"
-#include "./Tree.h"
-#include "./TreeSimplifyFunctions.h"
+#include "../Include/Constants.h"
+#include "../Include/DefineColourConsts.h"
+#include "../Libs/Stack/Assert.h"
+#include "../Include/Tree.h"
+#include "../Include/TreeSimplifyFunctions.h"
 
 double CalculateOperatorNode(enum Operators op_val, double left_num_val, double right_num_val)
 {

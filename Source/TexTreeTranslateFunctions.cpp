@@ -1,12 +1,12 @@
-#include "./Config.h"
+#include "../Include/Config.h"
 #include <stdio.h>
 #include <string.h>
-#include "./Constants.h"
-#include "./DefineColourConsts.h"
-#include "./Stack/Assert.h"
-#include "./Tree.h"
-#include "./Interactors.h"
-#include "./TexTreeTranslateFunctions.h"
+#include "../Include/Constants.h"
+#include "../Include/DefineColourConsts.h"
+#include "../Libs/Stack/Assert.h"
+#include "../Include/Tree.h"
+#include "../Include/Interactors.h"
+#include "../Include/TexTreeTranslateFunctions.h"
 
 int WriteExpressionInTexFile(const Node* node, FILE* tex_file, enum TexPrintExpressionModes print_mode)
 {

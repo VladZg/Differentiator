@@ -1,10 +1,10 @@
-#include "./Config.h"
-#include "./stdio.h"
-#include "./Constants.h"
-#include "./DefineColourConsts.h"
-#include "./Stack/Assert.h"
-#include "./Tree.h"
-#include "./ExpressionParams.h"
+#include "../Include/Config.h"
+#include <stdio.h>
+#include "../Include/Constants.h"
+#include "../Include/DefineColourConsts.h"
+#include "../Libs/Stack/Assert.h"
+#include "../Include/Tree.h"
+#include "../Include/ExpressionParams.h"
 
 void ExpressionParamsDump(FILE* stream, const ExpressionParams* params)
 {

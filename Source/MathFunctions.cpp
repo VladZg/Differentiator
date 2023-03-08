@@ -1,17 +1,17 @@
-#include "./Config.h"
+#include "../Include/Config.h"
 #include <stdlib.h>
 #include <cmath>
-#include "./Constants.h"
-#include "./DefineColourConsts.h"
-#include "./Stack/Assert.h"
-#include "./Stack/Stack.h"
-#include "./Tree.h"
-#include "./TreeDump.h"
-#include "./Interactors.h"
-#include "./TexTreeTranslateFunctions.h"
-#include "./DiffDSL.h"
-#include "./MathFunctions.h"
-#include "./TreeSimplifyFunctions.h"
+#include "../Include/Constants.h"
+#include "../Include/DefineColourConsts.h"
+#include "../Libs/Stack/Assert.h"
+#include "../Libs/Stack/Stack.h"
+#include "../Include/Tree.h"
+#include "../Include/TreeDump.h"
+#include "../Include/Interactors.h"
+#include "../Include/TexTreeTranslateFunctions.h"
+#include "../Include/DiffDSL.h"
+#include "../Include/MathFunctions.h"
+#include "../Include/TreeSimplifyFunctions.h"
 
 static int factorial(int num)
 {

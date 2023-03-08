@@ -1,14 +1,14 @@
-#include "./Config.h"
+#include "../Include/Config.h"
 #include <stdio.h>
 #include <string.h>
-#include "./Constants.h"
-#include "./DefineColourConsts.h"
-#include "./Stack/Assert.h"
-#include "./Tree.h"
-#include "./TreeDump.h"
-#include "./ExpressionReader.h"
-#include "./Interactors.h"
-#include "./TreeSimplifyFunctions.h"
+#include "../Include/Constants.h"
+#include "../Include/DefineColourConsts.h"
+#include "../Libs/Stack/Assert.h"
+#include "../Include/Tree.h"
+#include "../Include/TreeDump.h"
+#include "../Include/ExpressionReader.h"
+#include "../Include/Interactors.h"
+#include "../Include/TreeSimplifyFunctions.h"
 
 int ReadNodeVal(char* node_val, enum TreeDataType* val_type, enum Operators* op_val, double* num_val, const char** var_val, ExpressionParams* params)
 {
@@ -200,7 +200,7 @@ int ReadExpressionParams(FILE* expression_file, ExpressionParams* params)
 
 int AddConstants(ExpressionParams* params)
 {
-    #include "./ConstsTable.h"
+    #include "../Include/ConstsTable.h"
 
     return 0;
 }

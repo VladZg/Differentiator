@@ -1,8 +1,8 @@
-#include "./Config.h"
+#include "../Include/Config.h"
 #include <stdio.h>
 #include "./stdlib.h"
-#include "./Stack/Assert.h"
-#include "./CheckFile.h"
+#include "../Libs/Stack/Assert.h"
+#include "../Include/CheckFile.h"
 
 size_t IsFileExist(const char* filename)
 {
