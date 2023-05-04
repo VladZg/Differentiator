@@ -24,10 +24,13 @@ SRC = 	$(APP_DIR)main.cpp							\
 all : create_dirs compile
 
 create_dirs:
-	@mkdir -p ./TexFiles ./TreeDump
+	@mkdir -p ./TexFiles ./TreeDump ./Log
 
 compile:
 	@$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
+
+explore: ./$(TARGET) ./Log
+	./$(TARGET) > ./Log/Out.txt
 
 clean :
 	@rm -f *.o $(TARGET)
