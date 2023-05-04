@@ -1,7 +1,7 @@
 #ifndef EXPRESSION_READER
 #define EXPRESSION_READER
 
-#include "./Config.h"
+#include "../Config.h"
 #include <./stdlib.h>
 #include "./Constants.h"
 #include "./Tree.h"

@@ -1,7 +1,7 @@
 #ifndef CHECKFILE_H
 #define CHECKFILE_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdio.h>
 #include "../Libs/Stack/Include/Assert.h"
 

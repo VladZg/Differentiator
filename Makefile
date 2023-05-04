@@ -1,7 +1,7 @@
 TARGET = main
 
 CC = g++
-CFLAGS = -Wall -fsanitize=address -O0 -g
+CFLAGS = -O3 -g -w #-Wall #-fsanitize=address
 
 APP_DIR = ./App/
 SRC_DIR = ./Source/
@@ -21,8 +21,13 @@ SRC = 	$(APP_DIR)main.cpp							\
 		$(SRC_DIR)MathFunctions.cpp					\
 		$(SRC_DIR)TexCreateFunctions.cpp
 
-$(TARGET) :
-	$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
+all : create_dirs compile
+
+create_dirs:
+	@mkdir -p ./TexFiles ./TreeDump
+
+compile:
+	@$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
 
 clean :
-	rm -f *.o $(TARGET)
+	@rm -f *.o $(TARGET)

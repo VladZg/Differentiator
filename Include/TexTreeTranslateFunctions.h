@@ -1,7 +1,7 @@
 #ifndef TEXFUNCTIONS_H
 #define TEXFUNCTIONS_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdio.h>
 #include "./Constants.h"
 #include "./Tree.h"

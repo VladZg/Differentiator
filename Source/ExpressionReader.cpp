@@ -1,4 +1,4 @@
-#include "../Include/Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include "../Include/DefineColourConsts.h"
 #include "../Libs/Stack/Include/Assert.h"

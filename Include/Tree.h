@@ -1,7 +1,7 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "./Constants.h"
@@ -64,12 +64,13 @@ void TreePostorderPrint(const Node* node, FILE* stream);
 #define VERIFY_TREE( tree_ptr )     \
     if (!TreeVerify(tree_ptr)) return 0;
 
-#define VERIFY_NODE( node_ptr ) NodeVerify(__PRETTY_FUNCTION__, node_ptr)
+#define VERIFY_NODE( node_ptr )
+    if (!NodeVerify(__PRETTY_FUNCTION__, node_ptr)) return 0;
 
 #else
 
-#define VERIFY_TREE( tree_ptr )
-#define VERIFY_NODE( node_ptr )
+#define VERIFY_TREE( tree_ptr ) {}
+#define VERIFY_NODE( node_ptr ) {}
 
 #endif
 

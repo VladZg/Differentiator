@@ -1,7 +1,7 @@
 #ifndef TREEDUMP_H
 #define TREEDUMP_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include "./Constants.h"
 #include "./DefineColourConsts.h"

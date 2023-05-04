@@ -1,4 +1,4 @@
-#include "../Include/Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <cstdio>
@@ -18,22 +18,28 @@
 #include "../Include/DiffDSL.h"
 #include "../Include/TexCreateFunctions.h"
 
-// const char  DATABASE_FILENAME_DEFAULT[] = "./Database.txt";
-// const char* DATABASE_FILENAME           = nullptr;
+#ifndef N_OPEN_RES_PDF
+    static void OpenResultPdf() {system("xdg-open ./TexExpression.pdf");}
+    int open_result_pdf = atexit(OpenResultPdf);
+#endif
 
-int main() //const int argc, const char** argv
+int main()
 {
     FILE* expression_file = fopen("./Expression.txt", "r");
 
     ExpressionParams params = {};
     ReadExpressionParams(expression_file, &params);
-    ExpressionParamsDump(stdout, &params);
-
+    // ExpressionParamsDump(stdout, &params);
     fclose(expression_file);
+
+    // ShowTree(*(params.expression), SIMPLE_DUMP_MODE, 0);
+    // ShowTree(*(params.expression), FULL_FULL_DUMP_MODE, 1);
 
     CreateTexFile("TexExpression", &params);
 
     ExpressionParamsDtor(&params);
+
+    system("mv ./TexFiles/TexExpression.pdf ./");
 
     return 1;
 }

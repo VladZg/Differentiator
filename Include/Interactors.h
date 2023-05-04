@@ -1,7 +1,7 @@
 #ifndef INTERACTORS_H
 #define INTERACTORS_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include "./stdarg.h"
 #include "./Tree.h"

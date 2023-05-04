@@ -1,5 +1,5 @@
 
-#include "../Include/Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <cstdio>
@@ -763,7 +763,7 @@ int CompileTexFile(const char* filename)
     system(cmd1);
 
     char full_filename[100] = {};
-    sprintf(full_filename, "./TexFiles/%s.pdf", filename);
+    // sprintf(full_filename, "./TexFiles/%s.pdf", filename);
 
     // if (!IsFileExist(full_filename))
     // {

@@ -1,4 +1,4 @@
-#include "../Include/Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include <math.h>
 #include "../Include/Constants.h"
@@ -194,8 +194,7 @@ Node* CopyNode(const Node* node)
 int NodeDtor(Node** node)
 {
     ASSERT(node != nullptr);
-
-    if (!VERIFY_NODE(*node)) return 0;
+    VERIFY_NODE(*node);
 
     if (!(*node))
         return 1;

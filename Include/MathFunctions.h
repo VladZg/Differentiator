@@ -1,7 +1,7 @@
 #ifndef DIFFERENTIATION_H
 #define DIFFERENTIATION_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include "./Tree.h"
 #include "./Interactors.h"

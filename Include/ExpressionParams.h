@@ -1,7 +1,7 @@
 #ifndef EXPRESSIONPARAMS_H
 #define EXPRESSIONPARAMS_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include "./stdio.h"
 #include "./Constants.h"
 #include "./Tree.h"

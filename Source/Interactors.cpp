@@ -1,4 +1,4 @@
-#include "../Include/Config.h"
+#include "../Config.h"
 #include <stdio.h>
 #include <string.h>
 #include "../Include/Constants.h"

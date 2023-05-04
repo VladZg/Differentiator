@@ -1,7 +1,7 @@
 #ifndef TEXCREATEFUNCTIONS_H
 #define TEXCREATEFUNCTIONS_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <cstdio>

@@ -1,7 +1,7 @@
 #ifndef TREESIMPLIFYFUNCTIONS_H
 #define TREESIMPLIFYFUNCTIONS_H
 
-#include "./Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include "./Tree.h"
 #include "./Interactors.h"

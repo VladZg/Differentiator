@@ -1,4 +1,4 @@
-#include "../Include/Config.h"
+#include "../Config.h"
 #include <stdlib.h>
 #include <time.h>
 #include "../Include/Constants.h"
@@ -130,6 +130,7 @@ int ShowTree(const Node* node, enum TreeDumpModes dump_mode, int open_html_dump)
 
     N_dump_picture != 0 ? html_file_opening_mode[0] = 'a' : html_file_opening_mode[0] = 'w';
 
+    system("mkdir -p ./TreeDump/DumpPictures");
     sprintf(cmd, "dot " "./TreeDump/TextForTreeDump.dot" " -Tsvg -o" "./TreeDump/DumpPictures/TreeDump%ld.svg", ++N_dump_picture);
 
     system(cmd);
