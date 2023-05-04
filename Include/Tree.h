@@ -68,8 +68,8 @@ void TreePostorderPrint(const Node* node, FILE* stream);
 
 #else
 
-#define VERIFY_TREE( tree_ptr )
-#define VERIFY_NODE( node_ptr )
+#define VERIFY_TREE( tree_ptr ) 1
+#define VERIFY_NODE( node_ptr ) 1
 
 #endif
 

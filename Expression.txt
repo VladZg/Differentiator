@@ -1,8 +1,6 @@
-cos(kek)*a*x^2-tg(kek/e)
+sin(4*x)*e^x
 
-x = 1
-kek = 13
-a = 3.1415
+x = 9
 
 n_differentiate   = 2
 Makloren_accuracy = 3

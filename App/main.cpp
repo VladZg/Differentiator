@@ -33,7 +33,7 @@ int main()
     // ExpressionParamsDump(stdout, &params);
     fclose(expression_file);
 
-    // ShowTree(*(params.expression), SIMPLE_DUMP_MODE, 0);
+    // ShowTree(*(params.expression), SIMPLE_DUMP_MODE, 1);
     // ShowTree(*(params.expression), FULL_FULL_DUMP_MODE, 1);
 
     CreateTexFile("TexExpression", &params);
