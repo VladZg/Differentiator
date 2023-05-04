@@ -20,7 +20,7 @@
 
 #ifndef N_OPEN_RES_PDF
     static void OpenResultPdf() {system("xdg-open ./TexExpression.pdf");}
-    int open_result_pdf = atexit(OpenResultPdf);
+    static int open_result_pdf = atexit(OpenResultPdf);
 #endif
 
 int main()
