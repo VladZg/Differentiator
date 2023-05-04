@@ -194,7 +194,8 @@ Node* CopyNode(const Node* node)
 int NodeDtor(Node** node)
 {
     ASSERT(node != nullptr);
-    VERIFY_NODE(*node);
+
+    if (!VERIFY_NODE(*node)) return 0;
 
     if (!(*node))
         return 1;

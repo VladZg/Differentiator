@@ -7,6 +7,7 @@
 #include "../Include/DefineColourConsts.h"
 #include "../Libs/Stack/Include/Assert.h"
 #include "../Libs/Stack/Include/Stack.h"
+#include "../Libs/Logging/Log.h"
 #include "../Include/CheckFile.h"
 #include "../Include/Tree.h"
 #include "../Include/TreeDump.h"

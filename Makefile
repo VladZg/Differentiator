@@ -9,7 +9,7 @@ LIBS_DIR = ./Libs/
 
 SRC = 	$(APP_DIR)main.cpp							\
 		$(LIBS_DIR)Stack/Source/Stack.cpp			\
-		$(LIBS_DIR)Stack/Source/Log.cpp				\
+		$(LIBS_DIR)Logging/Log.cpp   				\
 		$(SRC_DIR)CheckFile.cpp						\
 		$(SRC_DIR)Tree.cpp							\
 		$(SRC_DIR)TreeDump.cpp						\

@@ -64,13 +64,12 @@ void TreePostorderPrint(const Node* node, FILE* stream);
 #define VERIFY_TREE( tree_ptr )     \
     if (!TreeVerify(tree_ptr)) return 0;
 
-#define VERIFY_NODE( node_ptr )
-    if (!NodeVerify(__PRETTY_FUNCTION__, node_ptr)) return 0;
+#define VERIFY_NODE( node_ptr ) NodeVerify(__PRETTY_FUNCTION__, node_ptr)
 
 #else
 
-#define VERIFY_TREE( tree_ptr ) {}
-#define VERIFY_NODE( node_ptr ) {}
+#define VERIFY_TREE( tree_ptr )
+#define VERIFY_NODE( node_ptr )
 
 #endif
 
